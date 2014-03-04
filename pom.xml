@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
 
@@ -18,7 +16,7 @@
     -->
     <groupId>uk.ac.ebi.pride.proteomes.pipeline</groupId>
     <artifactId>pride-proteomes-data-unifier</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>PRIDE Proteomes Pipeline</name>
     <description>This package contains the pipeline for the PRIDE Proteomes database.</description>
@@ -32,10 +30,10 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/pride-proteomes/pipeline/trunk</connection>
-        <developerConnection>scm:svn:https://svn.ebi.ac.uk/pride-repo/pride-proteomes/pipeline/trunk
+        <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/pride-proteomes/pipeline/tags/pride-proteomes-data-unifier-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.ebi.ac.uk/pride-repo/pride-proteomes/pipeline/tags/pride-proteomes-data-unifier-1.0.0
         </developerConnection>
-        <url>https://svn.ebi.ac.uk/pride-repo/pride-proteomes/pride-proteomes/pipeline</url>
+        <url>https://svn.ebi.ac.uk/pride-repo/pride-proteomes/pride-proteomes/pipeline/tags/pride-proteomes-data-unifier-1.0.0</url>
     </scm>
 
     <properties>
