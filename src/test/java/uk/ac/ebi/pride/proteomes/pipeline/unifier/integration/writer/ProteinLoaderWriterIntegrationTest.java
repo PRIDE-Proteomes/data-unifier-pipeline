@@ -1,0 +1,84 @@
+package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.writer;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.batch.item.database.JpaItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.pride.proteomes.db.core.api.protein.Protein;
+import uk.ac.ebi.pride.proteomes.db.core.api.protein.ProteinRepository;
+import uk.ac.ebi.pride.proteomes.db.core.api.quality.Score;
+import uk.ac.ebi.pride.proteomes.db.core.api.quality.ScoreRepository;
+import uk.ac.ebi.pride.proteomes.db.core.api.utils.ScoreUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+
+/**
+ * User: ntoro
+ * Date: 08/10/2013
+ * Time: 22:35
+ */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
+@TestExecutionListeners(TransactionalTestExecutionListener.class)
+@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
+public class ProteinLoaderWriterIntegrationTest extends AbstractJUnit4SpringContextTests {
+
+    private static final String SEQUENCE = "GPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLI";
+    private static final Integer TAXID = 9606;
+    private static final long DEFAULT_SCORE = 1;
+    private static final String ACCESSION = "P12345";
+    private static final String DESCRIPTION = "Default";
+
+    @Autowired
+    @Qualifier(value = "proteinLoaderWriter")
+    private JpaItemWriter<Protein> jpaItemWriter;
+
+    @Autowired
+    private ProteinRepository proteinRepository;
+
+    @Autowired
+    private ScoreRepository scoreRepository;
+
+    @Test
+    @DirtiesContext
+    @Transactional
+    public void testWriteFirstElement() throws Exception {
+
+        Protein protein = new Protein();
+        protein.setProteinAccession(ACCESSION);
+        protein.setSequence(SEQUENCE);
+        protein.setTaxid(TAXID);
+        protein.setDescription(DESCRIPTION);
+        protein.setScore(ScoreUtils.defaultScore());
+
+        List<Protein> list = new ArrayList<Protein>();
+        list.add(protein);
+
+        jpaItemWriter.write(list);
+
+        Protein other = proteinRepository.findByProteinAccession(ACCESSION);
+        Score otherScore = scoreRepository.findOne(DEFAULT_SCORE);
+
+        assertEquals(protein.getTaxid(), other.getTaxid());
+        assertEquals(protein.getSequence(), other.getSequence());
+        assertEquals(protein.getScore(), other.getScore());
+        assertEquals(protein.getDescription(), other.getDescription());
+        assertEquals(protein.getScore(), otherScore);
+
+        proteinRepository.delete(other.getProteinAccession());
+    }
+
+}

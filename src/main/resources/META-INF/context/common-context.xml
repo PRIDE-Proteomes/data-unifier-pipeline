@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config />
+
+    <!--job operator for restartability -->
+    <bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+       <property name="jobExplorer" ref="jobExplorer" />
+        <property name="jobRepository" ref="jobRepository" />
+        <property name="jobRegistry" ref="jobRegistry" />
+        <property name="jobLauncher" ref="jobLauncher" />
+    </bean>
+
+    <bean id="incrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer"/>
+
+    <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
+            <property name="dataSource" ref="proteomesDataSource" />
+    </bean>
+
+    <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry"/>
+
+    <bean id="jobRegistryBeanPostProcessor" class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+        <property name="jobRegistry" ref="jobRegistry"/>
+    </bean>
+
+    <!--job launcher-->
+    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <!--enable step scope for late binding-->
+    <bean class="org.springframework.batch.core.scope.StepScope"/>
+
+    <!--default validator -->
+    <bean id="defaultValidator" class="uk.ac.ebi.pride.proteomes.pipeline.validator.BeanValidationValidator"/>
+
+    <!--listen to the step execution -->
+    <bean id="stepListener" class="uk.ac.ebi.pride.proteomes.pipeline.listener.StepListener"/>
+
+    <!--listen to the step execution -->
+    <bean id="writeListener" class="uk.ac.ebi.pride.proteomes.pipeline.listener.WriteListener"/>
+
+    <!-- multi-threading support -->
+    <bean id="taskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="30"/>
+    </bean>
+
+
+    <bean id="speciesPartitioner" class="uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.SpeciesPartitioner">
+        <property name="taxids" ref="taxids"/>
+    </bean>
+
+    <bean id="peptideRangePartitioner" class="uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner">
+        <property name="column" value="PEPTIDE_ID"/>
+        <property name="table" value="PRIDEPROT.PEPTIDE"/>
+        <property name="taxids" ref="taxids"/>
+        <property name="symbolic" value="'TRUE'"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <!-- Nowadays the taxids of the species is hardcoded, should be more flexible -->
+    <bean id="taxids" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <!-- Human -->
+                <value>9606</value>
+                <!-- Mouse -->
+                <value>10090</value>
+                <!-- Arabidopsis -->
+                <value>3702</value>
+                <!-- Rat -->
+                <value>10116</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <!--Useful for testing and small modifications-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="proteomesDataSource"/>
+    </bean>
+
+
+</beans>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+    <!-- Step to load the proteins in PRIDE Proteomes -->
+    <!-- The input data is the FASTA file with the proteins to load -->
+    <batch:step id="partitionProteinLoaderStep">
+        <batch:tasklet start-limit="5" transaction-manager="transactionManager">
+            <batch:chunk reader="proteinLoaderReader"
+                         processor="proteinLoaderCompositeItemProcessor"
+                         writer="proteinLoaderWriter"
+                         commit-interval="250" skip-limit="99999">
+                <batch:skippable-exception-classes>
+                    <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
+                </batch:skippable-exception-classes>
+            </batch:chunk>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="stepListener"/>
+            <batch:listener ref="writeListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <!--Beans for protein loader -->
+    <!-- reader -->
+    <!-- TODO: make it configurable. The file has to follow a pattern like uniprot-taxonomy-{taxid}.fasta -->
+    <bean id="proteinLoaderReader" scope="step"
+          class="uk.ac.ebi.pride.proteomes.pipeline.unifier.loader.FastaFileItemReader">
+        <property name="resource">
+            <bean class="org.springframework.core.io.FileSystemResource">
+                <constructor-arg value="${fasta.file.dir}${fasta.file.prefix}#{stepExecutionContext['taxid']}${fasta.file.postfix}.fasta"/>
+            </bean>
+        </property>
+        <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
+    </bean>
+
+    <bean id="proteinLoaderCompositeItemProcessor"
+          class="org.springframework.batch.item.support.CompositeItemProcessor">
+        <property name="delegates">
+            <list>
+                <ref bean="proteinLoaderValidator" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- validator/processor -->
+    <bean id="proteinLoaderValidator"
+          class="org.springframework.batch.item.validator.ValidatingItemProcessor">
+        <property name="filter" value="false"/>
+        <property name="validator" ref="defaultValidator"/>
+    </bean>
+
+    <!-- writer -->
+    <bean id="proteinLoaderWriter" class="org.springframework.batch.item.database.JpaItemWriter">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <bean id="proteinLoaderLineMapper" scope="step" class="uk.ac.ebi.pride.proteomes.pipeline.unifier.loader.FastaToProteinLineMapper">
+        <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <description>
+        This job generates the mapping between the peptides and the DB of reference (Uniprot Fasta File)
+    </description>
+
+    <import resource="classpath:META-INF/jobs/unifier/symbolic-peptide-generator.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/symbolic-peptide-filter.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/symbolic-peptide-enricher.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-loader.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-grouping.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-mapping-tasklet.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-mapping-uniqueness.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-mapping-enricher.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-mapping-trypticity.xml"/>
+    <import resource="classpath:META-INF/jobs/unifier/protein-mapping-degradation.xml"/>
+
+
+
+
+    <batch:job id="proteomesDataUnifierJob" xmlns="http://www.springframework.org/schema/batch"
+               incrementer="incrementer" job-repository="jobRepository" restartable="true">
+
+        <batch:step id="symbolicPeptideGeneratorStep" next="symbolicPeptideFilterStep">
+            <batch:partition step="partitionSymbolicPeptideGeneratorStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="symbolicPeptideFilterStep" next="symbolicPeptideEnricherStep">
+            <batch:partition step="partitionSymbolicPeptideFilterStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="symbolicPeptideEnricherStep" next="proteinLoaderStep">
+            <batch:partition step="partitionSymbolicPeptideEnricherStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="proteinLoaderStep" next="proteinGroupingStep" >
+            <batch:partition step="partitionProteinLoaderStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="proteinGroupingStep" next="proteinMappingStep">
+            <batch:partition step="partitionProteinGroupingStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="proteinMappingStep" next="proteinMappingTrypticityStep">
+            <batch:partition step="partitionProteinMappingTaskletStep"
+                             partitioner="peptideRangePartitioner">
+                <batch:handler grid-size="30" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="proteinMappingTrypticityStep" next="proteinMappingDegradationStep">
+            <batch:partition step="partitionProteinMappingTrypticityTaskletStep"
+                             partitioner="peptideRangePartitioner">
+                <batch:handler grid-size="30" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="proteinMappingDegradationStep" next="proteinMappingEnricherStep">
+            <batch:partition step="partitionProteinMappingDegradationTaskletStep"
+                             partitioner="peptideRangePartitioner">
+                <batch:handler grid-size="30" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="proteinMappingEnricherStep" >
+            <batch:partition step="partitionProteinMappingEnricherStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+        <!--last step-->
+
+    </batch:job>
+
+    <!--load property files-->
+    <context:property-placeholder location="classpath:prop/data-unifier.properties" ignore-unresolvable="true" order="1"/>
+
+</beans>

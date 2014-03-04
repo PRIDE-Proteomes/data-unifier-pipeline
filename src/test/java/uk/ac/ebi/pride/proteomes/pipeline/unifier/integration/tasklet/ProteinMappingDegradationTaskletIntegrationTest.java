@@ -1,0 +1,56 @@
+package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.tasklet;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.scope.context.StepContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.test.StepScopeTestExecutionListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner;
+
+import static org.springframework.batch.test.MetaDataInstanceFactory.createStepExecution;
+
+/**
+ * User: ntoro
+ * Date: 17/01/2014
+ * Time: 16:03
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath*:/META-INF/context/data-unifier-degradation-hsql-test-context.xml"})
+@TestExecutionListeners(listeners = {StepScopeTestExecutionListener.class, TransactionalTestExecutionListener.class})
+@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
+public class ProteinMappingDegradationTaskletIntegrationTest extends AbstractJUnit4SpringContextTests {
+
+    @Autowired
+    private Tasklet proteinMappingDegradationTasklet;
+
+
+    @Test
+    @DirtiesContext
+    @Transactional(readOnly = true)
+    public void testTasklet() throws Exception {
+
+        StepExecution execution = createStepExecution();
+        execution.getExecutionContext().putInt(RangePartitioner.TAXID_KEY_NAME, 9606);
+        execution.getExecutionContext().putLong(RangePartitioner.MIN_KEY_NAME, 7);
+        execution.getExecutionContext().putLong(RangePartitioner.MAX_KEY_NAME, 10);
+
+
+        ChunkContext chunkContext = new ChunkContext(new StepContext(execution));
+        StepContribution stepContribution = new StepContribution(execution);
+
+        proteinMappingDegradationTasklet.execute(stepContribution, chunkContext);
+
+    }
+}

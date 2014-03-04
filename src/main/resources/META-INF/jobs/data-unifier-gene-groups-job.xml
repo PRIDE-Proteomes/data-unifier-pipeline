@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/batch
+       http://www.springframework.org/schema/batch/spring-batch.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <description>
+        This job generates the mapping between the peptides and the DB of reference (Uniprot Fasta File)
+    </description>
+
+    <import resource="classpath:META-INF/jobs/unifier/protein-gene-grouping.xml"/>
+
+
+    <batch:job id="proteinGeneGroupingJob" xmlns="http://www.springframework.org/schema/batch"
+               incrementer="incrementer" job-repository="jobRepository" restartable="true">
+
+
+        <!-- Run this step when we want to recalculate the uniqueness independently -->
+        <batch:step id="proteinGeneGroupingStep">
+            <batch:partition step="partitionProteinGroupingStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+    </batch:job>
+
+    <!--load property files-->
+    <context:property-placeholder location="classpath:prop/data-unifier.properties" ignore-unresolvable="true" order="1"/>
+
+</beans>

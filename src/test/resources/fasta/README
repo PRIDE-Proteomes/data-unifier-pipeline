@@ -1,0 +1,10 @@
+HOW TO RETRIEVE THE FASTA FILE
+
+Go to Uniprot ftp:
+
+ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/
+
+Download the corresponding species and  unzip
+Rename the file with the next patern uniprot-taxonomy-{taxid}-complete.fasta
+
+Copy the result file in /resources/groups directory
