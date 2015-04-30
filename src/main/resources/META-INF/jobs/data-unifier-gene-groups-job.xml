@@ -21,9 +21,9 @@
                incrementer="incrementer" job-repository="jobRepository" restartable="true">
 
 
-        <!-- Run this step when we want to recalculate the uniqueness independently -->
+        <!-- Run this step when we want to create the gene groups independently -->
         <batch:step id="proteinGeneGroupingStep">
-            <batch:partition step="partitionProteinGroupingStep"
+            <batch:partition step="partitionProteinGeneGroupingStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
                 <batch:handler grid-size="4" task-executor="taskExecutor"/>

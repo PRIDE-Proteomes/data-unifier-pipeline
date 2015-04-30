@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.reader;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.StepExecution;
@@ -10,13 +11,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.SymbolicPeptide;
 
-import static junit.framework.Assert.assertEquals;
 import static org.springframework.batch.test.MetaDataInstanceFactory.createStepExecution;
 
 /**
@@ -26,36 +28,40 @@ import static org.springframework.batch.test.MetaDataInstanceFactory.createStepE
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
-@TestExecutionListeners({StepScopeTestExecutionListener.class})
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class SymbolicPeptideGeneratorReaderIntegrationTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        StepScopeTestExecutionListener.class})
+public class SymbolicPeptideGeneratorReaderIntegrationTest {
 
-	private static final int DIFF_SEQUENCES_BY_SPECIES = 31;
+    private static final int DIFF_SEQUENCES_BY_SPECIES = 31;
 
-	@Autowired
+    @Autowired
     @Qualifier(value = "symbolicPeptideGeneratorReader")
-	private ItemReader<SymbolicPeptide> jdbcPagingItemReader;
+    private ItemReader<SymbolicPeptide> jdbcPagingItemReader;
 
-	public StepExecution getStepExecution() {
-		StepExecution execution = createStepExecution();
-		execution.getExecutionContext().putString("taxid", "9606");
-		return execution;
-	}
+    public StepExecution getStepExecution() {
+        StepExecution execution = createStepExecution();
+        execution.getExecutionContext().putString("taxid", "9606");
+        return execution;
+    }
 
 	@Test
 	@DirtiesContext
     @Transactional(readOnly = true)
-	public void testReader() throws Exception {
-		int count = 0;
+    public void testReader() throws Exception {
+        int count = 0;
         SymbolicPeptide peptide;
 
-		while ((peptide = jdbcPagingItemReader.read()) != null) {
-			count++;
+        while ((peptide = jdbcPagingItemReader.read()) != null) {
+            count++;
             System.out.println(peptide);
         }
 
-		assertEquals(DIFF_SEQUENCES_BY_SPECIES, count);
-	}
+        Assert.assertEquals(DIFF_SEQUENCES_BY_SPECIES, count);
+    }
 
 // Other method to test the reader, it substitute setUp, tearDown add testReader
 //	@Test
@@ -77,6 +83,6 @@ public class SymbolicPeptideGeneratorReaderIntegrationTest extends AbstractJUnit
 //						}
 //					}
 //				});
-//		assertEquals(DIFF_SEQUENCES_BY_SPECIES, count);
+//		Assert.assertEquals(DIFF_SEQUENCES_BY_SPECIES, count);
 //	}
 }

@@ -10,11 +10,11 @@
        http://www.springframework.org/schema/util/spring-util.xsd">
 
 
-    <batch:step id="partitionProteinGroupingStep">
+    <batch:step id="partitionProteinGeneGroupingStep">
         <batch:tasklet start-limit="5" transaction-manager="transactionManager">
-            <batch:chunk reader="proteinGroupingReader"
-                         processor="proteinGroupingCompositeItemProcessor"
-                         writer="proteinGroupingWriter"
+            <batch:chunk reader="proteinGeneGroupingReader"
+                         processor="proteinGeneGroupingCompositeItemProcessor"
+                         writer="proteinGeneGroupingWriter"
                          commit-interval="250" skip-limit="99999">
                 <batch:skippable-exception-classes>
                     <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
@@ -29,7 +29,7 @@
 
     <!-- Reads and transforms the input -->
     <!-- Assumes that the input is sorted by id to merge the lines in the same group-->
-    <bean id="proteinGroupingReader" scope="step"
+    <bean id="proteinGeneGroupingReader" scope="step"
           class="uk.ac.ebi.pride.proteomes.pipeline.unifier.grouping.ProteinGroupingItemReader">
         <property name="delegate">
             <!-- The delegate can not be a ref -->
@@ -68,7 +68,7 @@
     </bean>
 
     <!-- validator/processor -->
-    <bean id="proteinGroupingCompositeItemProcessor"
+    <bean id="proteinGeneGroupingCompositeItemProcessor"
           class="org.springframework.batch.item.support.CompositeItemProcessor">
         <property name="delegates">
             <list>
@@ -88,7 +88,7 @@
     </bean>
 
     <!-- writer -->
-    <bean id="proteinGroupingWriter" class="org.springframework.batch.item.database.JpaItemWriter">
+    <bean id="proteinGeneGroupingWriter" class="org.springframework.batch.item.database.JpaItemWriter">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 

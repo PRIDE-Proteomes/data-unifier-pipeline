@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.reader;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +14,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.groups.ProteinGroup;
 
-import static junit.framework.Assert.assertEquals;
 import static org.springframework.batch.test.MetaDataInstanceFactory.createStepExecution;
 
 /**
@@ -27,8 +30,12 @@ import static org.springframework.batch.test.MetaDataInstanceFactory.createStepE
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/context/data-unifier-hsql-test-context.xml"})
-@TestExecutionListeners({StepScopeTestExecutionListener.class})
-public class ProteinGroupingReaderIntegrationTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        StepScopeTestExecutionListener.class})
+public class ProteinGroupingReaderIntegrationTest {
 
     private static final int GENE_GROUPS_IN_FILE = 22549;
     private static final int ENTRY_GROUPS_IN_FILE = 261;
@@ -55,6 +62,7 @@ public class ProteinGroupingReaderIntegrationTest extends AbstractJUnit4SpringCo
 
     @Test
     @DirtiesContext
+    @Transactional(readOnly = true)
     public void testReader() throws Exception {
         int count = 0;
         ProteinGroup group;
@@ -63,6 +71,6 @@ public class ProteinGroupingReaderIntegrationTest extends AbstractJUnit4SpringCo
             System.out.println(group);
         }
 
-        assertEquals(ENTRY_GROUPS_IN_FILE, count);
+        Assert.assertEquals(ENTRY_GROUPS_IN_FILE, count);
     }
 }

@@ -21,7 +21,7 @@
                incrementer="incrementer" job-repository="jobRepository" restartable="true">
 
 
-        <!-- Run this step when we want to recalculate the uniqueness independently -->
+        <!-- Run this step when you want to recalculate the uniqueness independently -->
         <batch:step id="proteinMappingUniquenessStep">
             <batch:partition step="partitionProteinMappingUniquenessStep"
                              partitioner="speciesPartitioner">

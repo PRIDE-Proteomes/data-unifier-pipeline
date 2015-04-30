@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.writer;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ItemWriter;
@@ -7,8 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProtein;
@@ -16,10 +21,9 @@ import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProteinPK;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProteinRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.ProteinRepository;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static junit.framework.Assert.assertEquals;
 
 
 /**
@@ -31,6 +35,10 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class})
 public class ProteinMappingWriterIntegrationTest {
 
     //1	Q8NEZ4	4373
@@ -47,7 +55,7 @@ public class ProteinMappingWriterIntegrationTest {
 
     @Autowired
     @Qualifier(value = "proteinMappingUniquenessUpdater")
-    private ItemWriter<List<PeptideProtein>> proteinMappingWriter;
+    private ItemWriter<Collection<PeptideProtein>> proteinMappingUniquenessUpdater;
 
 
     @Autowired
@@ -77,14 +85,14 @@ public class ProteinMappingWriterIntegrationTest {
         List<List<PeptideProtein>> wrapperList = Collections.singletonList(list);
 
 
-        proteinMappingWriter.write(wrapperList);
+        proteinMappingUniquenessUpdater.write(wrapperList);
 
         PeptideProtein other = peptideProteinRepository.findOne(new PeptideProteinPK(PEPTIDE_ID, PROTEIN_ID, START_POSITION));
 
-        assertEquals(peptideProtein.getPeptide(),other.getPeptide());
-        assertEquals(peptideProtein.getProtein(),other.getProtein());
-        assertEquals(peptideProtein.getStartPosition(),other.getStartPosition());
-        assertEquals(peptideProtein.getUniqueness(),other.getUniqueness());
+        Assert.assertEquals(peptideProtein.getPeptide(), other.getPeptide());
+        Assert.assertEquals(peptideProtein.getProtein(), other.getProtein());
+        Assert.assertEquals(peptideProtein.getStartPosition(), other.getStartPosition());
+        Assert.assertEquals(peptideProtein.getUniqueness(), other.getUniqueness());
 
         peptideProteinRepository.delete(other);
 

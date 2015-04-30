@@ -1,9 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.funtional;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -12,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.junit.Assert.assertEquals;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 /**
  * User: ntoro
@@ -29,7 +26,10 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-oracle-test-context.xml"})
-public class SymbolicPeptideFilterStepTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class})
+public class SymbolicPeptideFilterStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -127,6 +127,6 @@ public class SymbolicPeptideFilterStepTest extends AbstractJUnit4SpringContextTe
 
         //Testing a individual step
         JobExecution jobExecution = jobLauncherTestUtils.launchStep("symbolicPeptideFilterStep");
-        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+        Assert.assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
     }
 }

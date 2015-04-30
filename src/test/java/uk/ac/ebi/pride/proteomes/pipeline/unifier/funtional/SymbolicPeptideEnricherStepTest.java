@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.funtional;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,10 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static junit.framework.Assert.assertEquals;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 
 /**
  * User: ntoro
@@ -24,7 +26,11 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
-public class SymbolicPeptideEnricherStepTest extends AbstractJUnit4SpringContextTests {
+@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class})
+public class SymbolicPeptideEnricherStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -67,6 +73,6 @@ public class SymbolicPeptideEnricherStepTest extends AbstractJUnit4SpringContext
 
         //Testing a individual step
         JobExecution jobExecution = jobLauncherTestUtils.launchStep("symbolicPeptideEnricherStep");
-        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+        Assert.assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
     }
 }

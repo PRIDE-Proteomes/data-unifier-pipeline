@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
@@ -10,9 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Arrays;
 import java.util.Map;
 
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 
 /**
  * User: ntoro
@@ -39,13 +38,13 @@ public class RangePartitionerTest {
         rangePartitioner.setTaxids(Arrays.asList(HUMAN, MOUSE, ARAB, RAT));
         Map<String,ExecutionContext> executionContextMap = rangePartitioner.partition(GRID_SIZE);
 
-        assertThat(executionContextMap.size(),is(MAP_SIZE));
+        Assert.assertThat(executionContextMap.size(), is(MAP_SIZE));
 
         for (String s : executionContextMap.keySet()) {
-            assertTrue(s.startsWith("rangePartition:"));
-            assertTrue(executionContextMap.get(s).containsKey(RangePartitioner.TAXID_KEY_NAME));
-            assertTrue(executionContextMap.get(s).containsKey(RangePartitioner.MIN_KEY_NAME));
-            assertTrue(executionContextMap.get(s).containsKey(RangePartitioner.MAX_KEY_NAME));
+            Assert.assertTrue(s.startsWith("rangePartition:"));
+            Assert.assertTrue(executionContextMap.get(s).containsKey(RangePartitioner.TAXID_KEY_NAME));
+            Assert.assertTrue(executionContextMap.get(s).containsKey(RangePartitioner.MIN_KEY_NAME));
+            Assert.assertTrue(executionContextMap.get(s).containsKey(RangePartitioner.MAX_KEY_NAME));
         }
     }
 }

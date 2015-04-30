@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.symbolic.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.Peptide;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class SymbolicPeptideFilterUpdater implements ItemWriter<Peptide> {
 
-    private static final Log logger = LogFactory.getLog(SymbolicPeptideFilterUpdater.class);
+    private static final Logger logger = LoggerFactory.getLogger(SymbolicPeptideFilterUpdater.class);
 
     @Autowired
     PeptideRepository peptideRepository;

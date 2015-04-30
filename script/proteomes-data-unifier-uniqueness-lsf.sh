@@ -19,11 +19,11 @@ QUEUE=research-rh6
 
 # Email recipients
 JOB_MAIL="ntoro@ebi.ac.uk"
-STD_ERR="output/proteomes-data-unifier-stderr.txt"
-STD_OUT="output/proteomes-data-unifier-stdout.txt"
-LABEL="proteomes-data-unifier"
-COMMAND="java -Xms1024m -Xmx20000m -jar ${project.build.finalName}.jar launch-data-unifier-job.xml proteomesDataUnifierJob -next"
-CPUS=30
+STD_ERR="output/uniqueness-stderr.txt"
+STD_OUT="output/uniqueness-stdout.txt"
+LABEL="proteomes-data-unifier-uniqueness"
+COMMAND="java -Xms1024m -Xmx4096m -jar ${project.build.finalName}.jar launch-data-unifier-uniqueness-job.xml proteomesDataUnifierUniquenessJob -next"
+CPUS=4
 
 #submit to LSF
-bsub -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M 30000 -R "rusage[mem=30000]" -n ${CPUS} -R "span[hosts=1]" -J ${LABEL} -N -u ${JOB_MAIL} ${COMMAND}
+bsub -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M 5000 -R "rusage[mem=5000]" -n ${CPUS} -R "span[hosts=1]" -J ${LABEL} -N -u ${JOB_MAIL} ${COMMAND}

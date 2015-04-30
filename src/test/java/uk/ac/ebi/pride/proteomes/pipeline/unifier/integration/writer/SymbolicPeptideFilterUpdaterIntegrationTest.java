@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.writer;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ItemWriter;
@@ -7,18 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.pride.proteomes.db.core.api.peptide.Peptide;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.SymbolicPeptide;
 import uk.ac.ebi.pride.proteomes.db.core.api.quality.ScoreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static junit.framework.Assert.assertNull;
 
 /**
  * User: ntoro
@@ -28,7 +31,11 @@ import static junit.framework.Assert.assertNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class SymbolicPeptideFilterUpdaterIntegrationTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class})
+public class SymbolicPeptideFilterUpdaterIntegrationTest  {
 
     private static final String SEQUENCE = "EWKSNVYLAR";
     private static final Integer TAXID = 9606;
@@ -37,7 +44,7 @@ public class SymbolicPeptideFilterUpdaterIntegrationTest extends AbstractJUnit4S
 
     @Autowired
     @Qualifier(value = "symbolicPeptideFilterUpdater")
-    private ItemWriter<SymbolicPeptide> symbolicPeptideFilterUpdater;
+    private ItemWriter<Peptide> symbolicPeptideFilterUpdater;
 
     @Autowired
     PeptideRepository peptideRepository;
@@ -63,7 +70,7 @@ public class SymbolicPeptideFilterUpdaterIntegrationTest extends AbstractJUnit4S
 
         symbolicPeptide = peptideRepository.findSymbolicPeptideBySequenceAndTaxid(SEQUENCE,TAXID);
 
-        assertNull(symbolicPeptide);
+        Assert.assertNull(symbolicPeptide);
 
         // Two keep consistent the DB we write again the item
         SymbolicPeptide rewritePeptide = new SymbolicPeptide();

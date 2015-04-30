@@ -1,15 +1,18 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.processor;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.test.StepScopeTestExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +22,6 @@ import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProtein;
 
 import java.util.Collection;
 
-import static junit.framework.Assert.assertEquals;
-
 /**
  * User: ntoro
  * Date: 27/01/2014
@@ -28,9 +29,13 @@ import static junit.framework.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/context/data-unifier-uniqueness-hsql-test-context.xml"})
-@TestExecutionListeners(TransactionalTestExecutionListener.class)
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class ProteinMappingUniquenessProcessorTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        StepScopeTestExecutionListener.class})
+public class ProteinMappingUniquenessProcessorTest {
 
     private static final int UNIQUENESS = 3;
 
@@ -59,7 +64,7 @@ public class ProteinMappingUniquenessProcessorTest extends AbstractJUnit4SpringC
             count++;
         }
 
-        assertEquals(UNIQUENESS, count);
+        Assert.assertEquals(UNIQUENESS, count);
 
     }
 }

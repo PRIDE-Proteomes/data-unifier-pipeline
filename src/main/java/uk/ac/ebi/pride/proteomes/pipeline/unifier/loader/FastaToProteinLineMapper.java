@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.loader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -19,7 +19,7 @@ import java.text.ParseException;
  */
 public class FastaToProteinLineMapper implements LineMapper<Protein>, InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(FastaToProteinLineMapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(FastaToProteinLineMapper.class);
 
     private Integer taxid;
 

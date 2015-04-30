@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.funtional;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
@@ -8,11 +9,8 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * User: ntoro
@@ -23,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class ProteinMappingStepTest extends AbstractJUnit4SpringContextTests {
+public class ProteinMappingStepTest {
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
@@ -34,7 +32,7 @@ public class ProteinMappingStepTest extends AbstractJUnit4SpringContextTests {
 
         //Testing a individual step
         JobExecution jobExecution = jobLauncherTestUtils.launchStep("proteinMappingStep");
-        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+        Assert.assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 
     }
 }

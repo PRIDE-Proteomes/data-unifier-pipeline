@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.loader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ReaderNotOpenException;
 import org.springframework.batch.item.file.*;
@@ -37,7 +37,7 @@ import java.nio.charset.Charset;
 public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReader<Protein> implements
         ResourceAwareItemReaderItemStream<Protein>, InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(FlatFileItemReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(FlatFileItemReader.class);
 
     // default encoding for input files
     public static final String DEFAULT_CHARSET = Charset.defaultCharset().name();

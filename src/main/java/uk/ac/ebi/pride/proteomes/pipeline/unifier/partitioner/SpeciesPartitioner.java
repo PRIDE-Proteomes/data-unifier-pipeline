@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.util.Assert;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class SpeciesPartitioner implements Partitioner {
 
-    private static final Log logger = LogFactory.getLog(SpeciesPartitioner.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpeciesPartitioner.class);
 
 
     public static final String TAXID_KEY_NAME = "taxid";

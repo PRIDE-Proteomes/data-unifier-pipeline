@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.mapping.degradation;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -23,7 +23,7 @@ import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner;
 
 public class ProteinMappingDegradationTasklet implements Tasklet {
 
-    private static final Log logger = LogFactory.getLog(ProteinMappingDegradationTasklet.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProteinMappingDegradationTasklet.class);
 
     @Autowired
     private PeptideRepository peptideRepository;

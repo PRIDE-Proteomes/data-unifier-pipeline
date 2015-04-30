@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.writer;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.database.JpaItemWriter;
@@ -8,8 +9,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +24,6 @@ import uk.ac.ebi.pride.proteomes.db.core.api.utils.ScoreUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-
 /**
  * User: ntoro
  * Date: 08/10/2013
@@ -32,9 +32,12 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
-@TestExecutionListeners(TransactionalTestExecutionListener.class)
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class ProteinLoaderWriterIntegrationTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class})
+public class ProteinLoaderWriterIntegrationTest {
 
     private static final String SEQUENCE = "GPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLIGPAVLI";
     private static final Integer TAXID = 9606;
@@ -72,11 +75,11 @@ public class ProteinLoaderWriterIntegrationTest extends AbstractJUnit4SpringCont
         Protein other = proteinRepository.findByProteinAccession(ACCESSION);
         Score otherScore = scoreRepository.findOne(DEFAULT_SCORE);
 
-        assertEquals(protein.getTaxid(), other.getTaxid());
-        assertEquals(protein.getSequence(), other.getSequence());
-        assertEquals(protein.getScore(), other.getScore());
-        assertEquals(protein.getDescription(), other.getDescription());
-        assertEquals(protein.getScore(), otherScore);
+        Assert.assertEquals(protein.getTaxid(), other.getTaxid());
+        Assert.assertEquals(protein.getSequence(), other.getSequence());
+        Assert.assertEquals(protein.getScore(), other.getScore());
+        Assert.assertEquals(protein.getDescription(), other.getDescription());
+        Assert.assertEquals(protein.getScore(), otherScore);
 
         proteinRepository.delete(other.getProteinAccession());
     }

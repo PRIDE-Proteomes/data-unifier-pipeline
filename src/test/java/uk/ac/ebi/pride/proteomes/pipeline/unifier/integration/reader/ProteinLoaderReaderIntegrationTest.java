@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.integration.reader;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,13 +14,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.Protein;
 
-import static junit.framework.Assert.assertEquals;
 import static org.springframework.batch.test.MetaDataInstanceFactory.createStepExecution;
 
 /**
@@ -29,9 +31,13 @@ import static org.springframework.batch.test.MetaDataInstanceFactory.createStepE
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
-@TestExecutionListeners({StepScopeTestExecutionListener.class})
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class ProteinLoaderReaderIntegrationTest extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners(listeners = {
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        StepScopeTestExecutionListener.class})
+public class ProteinLoaderReaderIntegrationTest {
 
     private static final int SEQUENCES_IN_FASTA = 14;
 
@@ -47,12 +53,12 @@ public class ProteinLoaderReaderIntegrationTest extends AbstractJUnit4SpringCont
 
     @Before
     public void setUp() throws Exception {
-        ((ItemStreamReader)fastaFileItemReader).open(new ExecutionContext());
+        ((ItemStreamReader) fastaFileItemReader).open(new ExecutionContext());
     }
 
     @After
     public void tearDown() throws Exception {
-        ((ItemStreamReader)fastaFileItemReader).close();
+        ((ItemStreamReader) fastaFileItemReader).close();
     }
 
     @Test
@@ -61,11 +67,11 @@ public class ProteinLoaderReaderIntegrationTest extends AbstractJUnit4SpringCont
     public void testReader() throws Exception {
         int count = 0;
         Protein protein;
-        while ((protein = fastaFileItemReader.read() )!= null) {
+        while ((protein = fastaFileItemReader.read()) != null) {
             count++;
             System.out.println(protein);
         }
 
-        assertEquals(SEQUENCES_IN_FASTA, count);
+        Assert.assertEquals(SEQUENCES_IN_FASTA, count);
     }
 }

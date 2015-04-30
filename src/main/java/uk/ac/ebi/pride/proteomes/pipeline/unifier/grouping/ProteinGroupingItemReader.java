@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.grouping;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.core.io.Resource;
@@ -14,7 +14,7 @@ import org.springframework.core.io.Resource;
  */
 public class ProteinGroupingItemReader implements ResourceAwareItemReaderItemStream<Group> {
 
-    private static final Log log = LogFactory.getLog(ProteinGroupingItemReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProteinGroupingItemReader.class);
 
     private Group result;
 
@@ -34,7 +34,11 @@ public class ProteinGroupingItemReader implements ResourceAwareItemReaderItemStr
         do {
             //Last element
             if (current == null) {
-                log.debug(result);
+                if (result != null)
+                    logger.debug(result.toString());
+                else
+                    logger.debug("Group{null}");
+
                 aux = result;
                 result = null;
             } else {
@@ -55,7 +59,10 @@ public class ProteinGroupingItemReader implements ResourceAwareItemReaderItemStr
         } while (aux == null && result != null);
 
 
-        log.debug(aux);
+        if (aux != null)
+            logger.debug(aux.toString());
+        else
+            logger.debug("Group{null}");
 
         return aux;
 

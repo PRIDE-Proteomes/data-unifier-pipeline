@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.proteomes.pipeline.unifier.mapping.uniqueness;
 import org.springframework.batch.item.ItemWriter;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProtein;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ import java.util.List;
  * An {@link org.springframework.batch.item.ItemWriter} that pulls data from a {@link java.util.Iterator} or
  * {@link Iterable} using the constructors.
  */
-public class ListItemWriter implements ItemWriter<List<PeptideProtein>> {
+public class ListItemWriter implements ItemWriter<Collection<PeptideProtein>> {
 
     /**
      * Internal writer
@@ -23,14 +25,14 @@ public class ListItemWriter implements ItemWriter<List<PeptideProtein>> {
     private ItemWriter<PeptideProtein> delegate;
 
     /**
-     * Implementation of {@link ItemWriter#write(java.util.List)} that just iterates over the
+     * Implementation of {@link ItemWriter#write(List)} that just iterates over the
      * iterator provided.
      */
     @Override
-    public void write(List<? extends List<PeptideProtein>> items) throws Exception {
+    public void write(List<? extends Collection<PeptideProtein>> items) throws Exception {
         if (!items.isEmpty()) {
-            for (List<PeptideProtein> item : items) {
-                delegate.write(item);
+            for (Collection<PeptideProtein> item : items) {
+                delegate.write(new ArrayList<PeptideProtein>(item));
             }
         }
 

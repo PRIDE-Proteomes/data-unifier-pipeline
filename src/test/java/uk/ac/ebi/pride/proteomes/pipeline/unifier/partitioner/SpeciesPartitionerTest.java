@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
@@ -10,9 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Arrays;
 import java.util.Map;
 
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 
 /**
  * User: ntoro
@@ -40,15 +39,15 @@ public class SpeciesPartitionerTest {
         speciesPartitioner.setTaxids(Arrays.asList(HUMAN,MOUSE,ARAB,RAT));
         Map<String, ExecutionContext> executionContextMap = speciesPartitioner.partition(GRID_SIZE);
 
-        assertThat(executionContextMap.size(), is(MAP_SIZE));
+        Assert.assertThat(executionContextMap.size(), is(MAP_SIZE));
 
-        assertTrue(executionContextMap.get("speciesPartition:9606").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
-        assertTrue(executionContextMap.get("speciesPartition:3702").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
-        assertTrue(executionContextMap.get("speciesPartition:10090").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
-        assertTrue(executionContextMap.get("speciesPartition:10116").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
-        assertTrue(executionContextMap.get("speciesPartition:9606").containsValue(HUMAN));
-        assertTrue(executionContextMap.get("speciesPartition:3702").containsValue(ARAB));
-        assertTrue(executionContextMap.get("speciesPartition:10090").containsValue(MOUSE));
-        assertTrue(executionContextMap.get("speciesPartition:10116").containsValue(RAT));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:9606").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:3702").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:10090").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:10116").containsKey(SpeciesPartitioner.TAXID_KEY_NAME));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:9606").containsValue(HUMAN));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:3702").containsValue(ARAB));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:10090").containsValue(MOUSE));
+        Assert.assertTrue(executionContextMap.get("speciesPartition:10116").containsValue(RAT));
     }
 }

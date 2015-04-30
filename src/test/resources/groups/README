@@ -1,11 +1,11 @@
 HOW TO GENERATE THE GENE GROUP INPUT FILE (example)
 
-Go to uniprot ftp:
+Go to uniprot ftp and download the files:
 
-ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/MOUSE_10090_idmapping.dat.gz
-ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/ARATH_3702_idmapping.dat.gz
-ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/RAT_10116_idmapping.dat.gz
-ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/MOUSE_10090_idmapping.dat.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/ARATH_3702_idmapping.dat.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/RAT_10116_idmapping.dat.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz"
 
 Download and uncompress the files.
 
@@ -17,6 +17,24 @@ grep "\tEnsembl\t" MOUSE_10090_idmapping.dat | sort -k2 | awk -F\t 'BEGIN{OFS=FS
 grep "\tEnsemblGenome\t" ARATH_3702_idmapping.dat | sort -k2 | awk -F\t 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-3702-sorted.txt
 grep "\tEnsembl\t" RAT_10116_idmapping.dat | sort -k2 | awk -F\t 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-10116-sorted.txt
 grep "\tEnsembl\t" HUMAN_9606_idmapping.dat | sort -k2 | awk -F\t 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-9606-sorted.txt
+
+For Uniprot entries will be done with the fasta files
+
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/ARATH.fasta.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/HUMAN.fasta.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/MOUSE.fasta.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/RAT.fasta.gz"
+
+Download and uncompress the files.
+
+gzip -d *.gz
+
+In the same directory execute:
+
+grep ">" uniprot-taxonomy-3702-complete.fasta | cut -d'|' -f 2,3 | cut -d' ' -f 1 | awk -F'|' 'BEGIN{OFS="\t";}{t=$i;$i=$j;$j=t;aux=split(t,array,"-");$k=array[1]"\tENTRY";}1' i=1 j=3 k=1 | sort -k1 > entry-groups-3702-sorted.txt
+grep ">" uniprot-taxonomy-9606-complete.fasta | cut -d'|' -f 2,3 | cut -d' ' -f 1 | awk -F'|' 'BEGIN{OFS="\t";}{t=$i;$i=$j;$j=t;aux=split(t,array,"-");$k=array[1]"\tENTRY";}1' i=1 j=3 k=1 | sort -k1 > entry-groups-9606-sorted.txt
+grep ">" uniprot-taxonomy-10090-complete.fasta | cut -d'|' -f 2,3 | cut -d' ' -f 1 | awk -F'|' 'BEGIN{OFS="\t";}{t=$i;$i=$j;$j=t;aux=split(t,array,"-");$k=array[1]"\tENTRY";}1' i=1 j=3 k=1 | sort -k1 > entry-groups-10090-sorted.txt
+grep ">" uniprot-taxonomy-10116-complete.fasta | cut -d'|' -f 2,3 | cut -d' ' -f 1 | awk -F'|' 'BEGIN{OFS="\t";}{t=$i;$i=$j;$j=t;aux=split(t,array,"-");$k=array[1]"\tENTRY";}1' i=1 j=3 k=1 | sort -k1 > entry-groups-10116-sorted.txt
 
 Copy the results file in /resources/groups directory
 

@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.mapping.trypticity;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -22,7 +22,7 @@ import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner;
 
 public class ProteinMappingTrypticityTasklet implements Tasklet {
 
-    private static final Log logger = LogFactory.getLog(ProteinMappingTrypticityTasklet.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProteinMappingTrypticityTasklet.class);
 
     @Autowired
     private PeptideRepository peptideRepository;
