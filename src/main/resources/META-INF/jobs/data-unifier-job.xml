@@ -137,7 +137,7 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="proteinMappingEnricherStep" >
+        <batch:step id="proteinMappingEnricherStep" next="peptiformsIndexerStep" >
             <batch:partition step="partitionProteinMappingEnricherStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
@@ -148,6 +148,15 @@
             </batch:listeners>
         </batch:step>
 
+        <batch:step id="peptiformsIndexerStep" >
+            <batch:partition step="partitionPeptiformIndexerTaskletStep"
+                             partitioner="peptideRangePartitioner">
+                <batch:handler grid-size="30" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
         <!--last step-->
 
     </batch:job>

@@ -40,13 +40,17 @@
         <!-- UTF-8 encoding to generate the build-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <proteomes.db.core.version>1.0.2-SNAPSHOT</proteomes.db.core.version>
+        <proteomes.indexer.version>0.0.2-SNAPSHOT</proteomes.indexer.version>
+        <proteomes.index.service.version>0.0.2-SNAPSHOT</proteomes.index.service.version>
+
         <spring.version>4.0.9.RELEASE</spring.version>
         <spring.batch.version>2.2.7.RELEASE</spring.batch.version>
+        <solrj.version>4.10.1</solrj.version>
         <hibernate.version>4.3.6.Final</hibernate.version>
         <hibernate.validator>4.3.0.Final</hibernate.validator>
-        <proteomes.db.core.version>1.0.2-SNAPSHOT</proteomes.db.core.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
-        <!--<commons.io.version>2.4</commons.io.version>-->
         <hsql.version>2.3.1</hsql.version>
 
     </properties>
@@ -182,6 +186,19 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <!-- Solr test framework -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-test-framework</artifactId>
+            <version>${solrj.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- proteomes repo -->
         <dependency>
@@ -190,16 +207,24 @@
             <version>${proteomes.db.core.version}</version>
         </dependency>
 
+        <!-- proteomes repo -->
+        <dependency>
+            <groupId>uk.ac.ebi.pride.proteomes</groupId>
+            <artifactId>index-service</artifactId>
+            <version>${proteomes.index.service.version}</version>
+        </dependency>
+
+        <!-- proteomes indexer -->
+        <dependency>
+            <groupId>uk.ac.ebi.pride.proteomes</groupId>
+            <artifactId>indexer</artifactId>
+            <version>${proteomes.indexer.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
         </dependency>
-
-        <!--<dependency>-->
-        <!--<groupId>commons-io</groupId>-->
-        <!--<artifactId>commons-io</artifactId>-->
-        <!--<version>${commons.io.version}</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -242,8 +267,6 @@
         </dependency>
 
     </dependencies>
-
-
 
     <repositories>
 

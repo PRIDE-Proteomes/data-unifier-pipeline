@@ -48,4 +48,6 @@
         <property name="isolationLevelForCreate" value="ISOLATION_DEFAULT"/>
     </bean>
 
+    <!-- The properties for the spring batch db in database-hsql.properties and detected by naming convention scaning the prop directory -->
+
 </beans>
