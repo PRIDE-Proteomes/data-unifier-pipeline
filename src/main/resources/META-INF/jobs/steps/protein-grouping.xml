@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/batch
+       http://www.springframework.org/schema/batch/spring-batch.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <batch:step id="partitionProteinGroupingStep">
+        <batch:tasklet start-limit="5" transaction-manager="transactionManager">
+            <batch:chunk reader="proteinGroupingReader"
+                         processor="proteinGroupingCompositeItemProcessor"
+                         writer="proteinGroupingWriter"
+                         commit-interval="250" skip-limit="99999">
+                <batch:skippable-exception-classes>
+                    <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
+                </batch:skippable-exception-classes>
+            </batch:chunk>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="stepListener"/>
+            <batch:listener ref="writeListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <!-- Reads and transforms the input -->
+    <!-- Assumes that the input is sorted by id to merge the lines in the same group-->
+    <bean id="proteinGroupingReader" scope="step"
+          class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.grouping.ProteinGroupingItemReader">
+        <property name="delegate">
+            <!-- The delegate can not be a ref -->
+            <bean id="proteinGroupingDelegateReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+                <property name="recordSeparatorPolicy" ref="proteinGroupingRecordSeparatorPolicy"/>
+                <property name="resource">
+                    <bean class="org.springframework.core.io.FileSystemResource">
+                        <constructor-arg value="${protein.group.file.dir}${protein.group.file.prefix}#{stepExecutionContext['taxid']}${protein.group.file.postfix}.txt"/>
+                    </bean>
+                </property>
+                <property name="lineMapper">
+                    <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                        <property name="lineTokenizer" ref="proteinGroupingLineTokenizer"/>
+                        <property name="fieldSetMapper" ref="proteinTransformGroupingMapper"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="proteinTransformGroupingMapper" scope="step"
+          class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.grouping.ProteinGroupingFieldSetMapper">
+        <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
+    </bean>
+
+
+    <bean id="proteinGroupingRecordSeparatorPolicy"
+          class="org.springframework.batch.item.file.separator.SimpleRecordSeparatorPolicy"/>
+    <bean id="proteinGroupingLineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+        <property name="delimiter">
+            <util:constant static-field="org.springframework.batch.item.file.transform.DelimitedLineTokenizer.DELIMITER_TAB"/>
+        </property>
+        <property name="names" value="id,type,description,proteins"/>
+        <property name="strict" value="true"/>
+    </bean>
+
+    <!-- validator/processor -->
+    <bean id="proteinGroupingCompositeItemProcessor"
+          class="org.springframework.batch.item.support.CompositeItemProcessor">
+        <property name="delegates">
+            <list>
+                <ref bean="proteinGroupingProcessor"/>
+                <ref bean="proteinGroupingValidator"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="proteinGroupingProcessor"
+          class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.grouping.ProteinGroupingItemProcessor"/>
+
+    <bean id="proteinGroupingValidator"
+          class="org.springframework.batch.item.validator.ValidatingItemProcessor">
+        <property name="filter" value="false"/>
+        <property name="validator" ref="defaultValidator"/>
+    </bean>
+
+    <!-- writer -->
+    <bean id="proteinGroupingWriter" class="org.springframework.batch.item.database.JpaItemWriter">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+</beans>

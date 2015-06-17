@@ -11,10 +11,10 @@
 	   http://www.springframework.org/schema/context/spring-context.xsd">
 
     <description>
-        This job allows the creation of the proteomes index from the scratch
+        This job allows the creation of the proteomes solr index
     </description>
 
-    <import resource="classpath:META-INF/jobs/unifier/peptiforms-indexer-tasklet.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/peptiforms-indexer-tasklet.xml"/>
 
 
     <batch:job id="proteomesDataUnifierIndexerJob" xmlns="http://www.springframework.org/schema/batch"

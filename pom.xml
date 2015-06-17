@@ -45,7 +45,7 @@
         <proteomes.indexer.version>0.0.2-SNAPSHOT</proteomes.indexer.version>
         <proteomes.index.service.version>0.0.2-SNAPSHOT</proteomes.index.service.version>
 
-        <spring.version>4.0.9.RELEASE</spring.version>
+        <spring.version>3.2.13.RELEASE</spring.version>
         <spring.batch.version>2.2.7.RELEASE</spring.batch.version>
         <solrj.version>4.10.1</solrj.version>
         <hibernate.version>4.3.6.Final</hibernate.version>
@@ -197,21 +197,31 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-jdk14</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
         <!-- proteomes repo -->
         <dependency>
             <groupId>uk.ac.ebi.pride.proteomes.db</groupId>
-            <artifactId>pride-proteomes-db-core</artifactId>
+            <artifactId>db-core</artifactId>
             <version>${proteomes.db.core.version}</version>
         </dependency>
 
-        <!-- proteomes repo -->
+        <!-- proteomes index service -->
         <dependency>
             <groupId>uk.ac.ebi.pride.proteomes</groupId>
             <artifactId>index-service</artifactId>
             <version>${proteomes.index.service.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- proteomes indexer -->
@@ -219,6 +229,25 @@
             <groupId>uk.ac.ebi.pride.proteomes</groupId>
             <artifactId>indexer</artifactId>
             <version>${proteomes.indexer.version}</version>
+        </dependency>
+
+        <!-- uniprot java client beta version. Is using solr 5 so it is not compatible -->
+        <!--<dependency>-->
+            <!--<groupId>uk.ac.ebi.uniprot</groupId>-->
+            <!--<artifactId>japi</artifactId>-->
+            <!--<version>0.0.2</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>uk.ac.ebi.uniprot.kraken</groupId>
+            <artifactId>uniprotjapi</artifactId>
+            <version>2015.06</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -245,9 +274,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.7.10</version>
+        </dependency>
         <!--test-->
         <dependency>
             <groupId>junit</groupId>

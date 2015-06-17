@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+
+    <!-- Step to generate the symbolic peptides in PRIDE Proteomes -->
+    <!-- The input data is the peptide variants located in the PRIDE Proteomes DB. -->
+    <batch:step id="partitionSymbolicPeptideGeneratorStep">
+        <batch:tasklet start-limit="5" transaction-manager="transactionManager">
+            <batch:chunk reader="symbolicPeptideGeneratorReader"
+                         processor="symbolicPeptideGeneratorValidator"
+                         writer="symbolicPeptideGeneratorWriter"
+                         commit-interval="250" skip-limit="99999">
+                <batch:skippable-exception-classes>
+                    <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
+                </batch:skippable-exception-classes>
+            </batch:chunk>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="stepListener"/>
+            <batch:listener ref="writeListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <!--Beans for symbolic peptides generation -->
+    <!-- reader -->
+    <!--We prefer JdbcPagingItemReader vs JdbcCursorItemReader because is thread safe-->
+    <bean id="symbolicPeptideGeneratorReader" scope="step"
+          class="org.springframework.batch.item.database.JdbcPagingItemReader">
+        <property name="dataSource" ref="proteomesDataSource"/>
+        <property name="queryProvider">
+            <bean class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+                <property name="dataSource" ref="proteomesDataSource"/>
+                <property name="selectClause">
+                    <value>
+                        <![CDATA[
+                            select distinct SEQUENCE, TAXID
+                        ]]>
+                    </value>
+                </property>
+                <property name="fromClause" value="from PRIDEPROT.PEPTIDE"/>
+                <!--When we generate the input from the peptides we need to be sure about the species-->
+                <property name="whereClause" value="where PEPTIDE.TAXID =:taxid"/>
+                <property name="sortKey" value="SEQUENCE"/>
+            </bean>
+        </property>
+        <property name="parameterValues">
+            <map>
+                <entry key="taxid" value="#{stepExecutionContext['taxid']}"/>
+            </map>
+        </property>
+        <property name="pageSize" value="250"/>
+        <property name="rowMapper">
+            <bean class="uk.ac.ebi.pride.proteomes.pipeline.unifier.peptide.symbolic.generator.SymbolicPeptideRowMapper"/>
+        </property>
+        <property name="fetchSize" value="500"/>
+    </bean>
+
+    <!-- validator/processor -->
+    <bean id="symbolicPeptideGeneratorValidator"
+          class="org.springframework.batch.item.validator.ValidatingItemProcessor">
+        <property name="filter" value="false"/>
+        <property name="validator" ref="defaultValidator"/>
+    </bean>
+
+    <!-- writer -->
+    <bean id="symbolicPeptideGeneratorWriter" class="org.springframework.batch.item.database.JpaItemWriter">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+</beans>

@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.mapper;
 
 import org.junit.Test;
-import uk.ac.ebi.pride.proteomes.pipeline.unifier.symbolic.generator.SymbolicPeptideRowMapper;
+import uk.ac.ebi.pride.proteomes.pipeline.unifier.peptide.symbolic.generator.SymbolicPeptideRowMapper;
 
 import java.sql.ResultSet;
 

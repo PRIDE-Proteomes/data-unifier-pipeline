@@ -4,6 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="classpath*:META-INF/context/proteomes-oracle-data-source-context.xml"/>
+    <import resource="classpath*:META-INF/context/proteomes-solr-context.xml"/>
     <import resource="classpath*:META-INF/context/common-context.xml" />
     <import resource="classpath*:META-INF/jobs/data-unifier-job.xml"/>
 

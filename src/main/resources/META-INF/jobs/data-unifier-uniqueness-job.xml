@@ -14,7 +14,7 @@
         This job generates the mapping between the peptides and the DB of reference (Uniprot Fasta File)
     </description>
 
-    <import resource="classpath:META-INF/jobs/unifier/protein-mapping-uniqueness.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/protein-mapping-uniqueness.xml"/>
 
 
     <batch:job id="proteomesDataUnifierUniquenessJob" xmlns="http://www.springframework.org/schema/batch"

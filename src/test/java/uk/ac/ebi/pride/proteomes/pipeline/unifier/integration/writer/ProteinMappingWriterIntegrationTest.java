@@ -72,11 +72,8 @@ public class ProteinMappingWriterIntegrationTest {
     @Transactional
     public void testWriteFirstElement() throws Exception {
 
-        PeptideProtein peptideProtein = new PeptideProtein();
+        PeptideProtein peptideProtein = new PeptideProtein(PEPTIDE_ID, PROTEIN_ID, START_POSITION);
 
-        peptideProtein.setProteinAccession(PROTEIN_ID);
-        peptideProtein.setPeptideId(PEPTIDE_ID);
-        peptideProtein.setStartPosition(START_POSITION);
         peptideProtein.setUniqueness(UNIQUENESS);
         peptideProtein.setPeptide(peptideRepository.findOne(PEPTIDE_ID));
         peptideProtein.setProtein(proteinRepository.findOne(PROTEIN_ID));
@@ -92,6 +89,7 @@ public class ProteinMappingWriterIntegrationTest {
         Assert.assertEquals(peptideProtein.getPeptide(), other.getPeptide());
         Assert.assertEquals(peptideProtein.getProtein(), other.getProtein());
         Assert.assertEquals(peptideProtein.getStartPosition(), other.getStartPosition());
+        //Sometimes this test fails here. I couldn't find the reason yet
         Assert.assertEquals(peptideProtein.getUniqueness(), other.getUniqueness());
 
         peptideProteinRepository.delete(other);

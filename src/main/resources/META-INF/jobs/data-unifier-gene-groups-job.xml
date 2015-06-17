@@ -14,7 +14,7 @@
         This job generates the mapping between the peptides and the DB of reference (Uniprot Fasta File)
     </description>
 
-    <import resource="classpath:META-INF/jobs/unifier/protein-gene-grouping.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/protein-gene-grouping.xml"/>
 
 
     <batch:job id="proteinGeneGroupingJob" xmlns="http://www.springframework.org/schema/batch"

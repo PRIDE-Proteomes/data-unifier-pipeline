@@ -66,6 +66,7 @@ public class ProteinLoaderWriterIntegrationTest {
         protein.setTaxid(TAXID);
         protein.setDescription(DESCRIPTION);
         protein.setScore(ScoreUtils.defaultScore());
+        protein.setContaminant(Boolean.FALSE);
 
         List<Protein> list = new ArrayList<Protein>();
         list.add(protein);
