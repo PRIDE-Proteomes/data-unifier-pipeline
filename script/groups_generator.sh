@@ -4,19 +4,21 @@ echo -e "\nCleaning previously generated files\n"
 rm groups/*.txt
 rm proteins/*.fasta
 
-echo -e "\nDownloading uniprot current release id mapping file\n"
-
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/ARATH_3702_idmapping.dat.gz"
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz"
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/MOUSE_10090_idmapping.dat.gz"
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/RAT_10116_idmapping.dat.gz"
-
 echo -e "\nDownloading uniprot current release proteomes\n"
 
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/ARATH.fasta.gz"
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/HUMAN.fasta.gz"
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/MOUSE.fasta.gz"
-curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/RAT.fasta.gz"
+# New ftp for proteomes in Uniprot
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000006548_3702_additional.fasta.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000005640_9606_additional.fasta.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000000589_10090_additional.fasta.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000002494_10116_additional.fasta.gz"
+
+echo -e "\nDownloading uniprot current release id mapping file\n"
+# New ftp for proteomes in Uniprot
+
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000006548_3702.idmapping.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000005640_9606.idmapping.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000000589_10090.idmapping.gz"
+curl -O "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000002494_10116.idmapping.gz"
 
 echo -e "\nUncompressing gzip files\n"
 
@@ -24,17 +26,17 @@ gzip -d *.gz
 
 echo -e "\nRenaming fasta files to the convention pattern\n"
 
-mv ARATH.fasta uniprot-taxonomy-3702-complete.fasta
-mv HUMAN.fasta uniprot-taxonomy-9606-complete.fasta
-mv MOUSE.fasta uniprot-taxonomy-10090-complete.fasta
-mv RAT.fasta uniprot-taxonomy-10116-complete.fasta
+mv UP000006548_3702_additional.fasta uniprot-taxonomy-3702-complete.fasta
+mv UP000005640_9606_additional.fasta uniprot-taxonomy-9606-complete.fasta
+mv UP000000589_10090_additional.fasta uniprot-taxonomy-10090-complete.fasta
+mv UP000002494_10116_additional.fasta uniprot-taxonomy-10116-complete.fasta
 
 echo -e  "\nGenerating Ensembl genes groups\n"
 
-grep -P "\tEnsemblGenome\t" ARATH_3702_idmapping.dat | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-3702-sorted.txt
-grep -P "\tEnsembl\t" HUMAN_9606_idmapping.dat | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-9606-sorted.txt
-grep -P "\tEnsembl\t" MOUSE_10090_idmapping.dat | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-10090-sorted.txt
-grep -P "\tEnsembl\t" RAT_10116_idmapping.dat | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-10116-sorted.txt
+grep -P "\tEnsemblGenome\t" UP000006548_3702.idmapping | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-3702-sorted.txt
+grep -P "\tEnsembl\t" UP000005640_9606.idmapping | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-9606-sorted.txt
+grep -P "\tEnsembl\t" UP000000589_10090.idmapping | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-10090-sorted.txt
+grep -P "\tEnsembl\t" UP000002494_10116.idmapping | sort -k2 | awk -F'\t' 'BEGIN{OFS=FS;}{t=$i;$i=$j;$j=t;$k="GENE\t"$k }1' i=1 j=3 k=2 > gene-groups-10116-sorted.txt
 
 echo -e "\nGenerating Uniprot entry groups\n"
 
@@ -48,6 +50,6 @@ echo -e "\nMoving files to the right directory (relative routes)\n"
 mv *.txt groups
 mv *.fasta proteins
 
-echo -e "\nDeleting *.dat files\n"
+echo -e "\nDeleting *.idmapping files\n"
 
-rm *.dat
+rm *.idmapping
