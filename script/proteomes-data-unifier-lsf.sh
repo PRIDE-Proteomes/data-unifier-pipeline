@@ -11,7 +11,7 @@
 cd /nfs/pride/work/proteomes/data-unifier
 
 # Load environment (and make the bsub command available)
-#. /etc/profile.d/lsf.sh
+. /etc/profile.d/lsf.sh
 
 
 QUEUE=research-rh6
