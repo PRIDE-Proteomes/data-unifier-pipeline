@@ -41,8 +41,9 @@ public class ProteinEnricherItemProcessorTest {
     @Autowired
     private ProteinRepository proteinRepository;
 
-    private static final String PROTEIN_AC = "Q8NEZ4";
-    private static final String PROTEIN_AC_FEATURES = "Q8IZP9";
+    private static final String PROTEIN_AC_NO_FEATURES = "Q8NEZ4";
+    private static final String PROTEIN_AC_ISO = "C0LGN2-2";
+    private static final String PROTEIN_AC_FEATURES = "C0LGN2";
     private static final int NUM_FEATURES = 16;
 
 
@@ -51,10 +52,23 @@ public class ProteinEnricherItemProcessorTest {
     @DirtiesContext
     public void testProcess() throws Exception {
 
-        Protein item = proteinRepository.findByProteinAccession(PROTEIN_AC);
+        Protein item = proteinRepository.findByProteinAccession(PROTEIN_AC_NO_FEATURES);
         Protein other = itemProcessor.process(item);
 
         //As Q8NEZ4 doesn't have any feature the item return is null to avoid write it again in the db becasue there is no new information
+        Assert.assertNull(other);
+
+    }
+
+    @Test
+    @Transactional
+    @DirtiesContext
+    public void testProcessIsoforms() throws Exception {
+
+        Protein item = proteinRepository.findByProteinAccession(PROTEIN_AC_ISO);
+        Protein other = itemProcessor.process(item);
+
+        //C0LGN2-2 doesn't have any feature because it is an isoform, and the annotations are associated to the canonical
         Assert.assertNull(other);
 
     }

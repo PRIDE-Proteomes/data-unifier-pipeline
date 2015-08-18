@@ -5,17 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.Feature;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.FeatureLocation;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.HasFeatureDescription;
-import uk.ac.ebi.kraken.uuw.services.remoting.*;
+import uk.ac.ebi.kraken.uuw.services.remoting.EntryRetrievalService;
+import uk.ac.ebi.kraken.uuw.services.remoting.RemoteDataAccessException;
+import uk.ac.ebi.kraken.uuw.services.remoting.UniProtJAPI;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.CvParamProteomesRepository;
+import uk.ac.ebi.pride.proteomes.db.core.api.param.FeatureType;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.Protein;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.ProteinRepository;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -41,65 +43,59 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
 
         Set<uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature> features = new HashSet<uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature>();
 
-        UniProtQueryService uniProtQueryService = UniProtJAPI.factory.getUniProtQueryService();
+        //TODO Move the query service outside of the pipeline if it keeps growing
+        EntryRetrievalService entryRetrievalService = UniProtJAPI.factory.getEntryRetrievalService();
 
-        Query query = UniProtQueryBuilder.buildExactMatchIdentifierQuery(proteinAccession);
+        try {
+            Collection<Feature> collection = (Collection<Feature>) entryRetrievalService.getUniProtAttribute(proteinAccession, "ognl:features");
 
-        EntryIterator<UniProtEntry> uniProtEntries = uniProtQueryService.getEntryIterator(query);
-        while (uniProtEntries.hasNext()) {
-            UniProtEntry up = uniProtEntries.next();
+            for (Feature uniProtFeature : collection) {
+                // process feature
+                switch (uniProtFeature.getType()) {
+                    case SIGNAL:
+                    case TRANSMEM:
+                    case TOPO_DOM:
+                    case INTRAMEM:
+                        String description = null;
+                        FeatureLocation featureLocation = uniProtFeature.getFeatureLocation();
+                        int start = featureLocation.getStart();
+                        int end = featureLocation.getEnd();
 
-            if (up.getFeatures() != null) {
+                        if (uniProtFeature instanceof HasFeatureDescription) {
+                            final HasFeatureDescription hasFeatureDescription = (HasFeatureDescription) uniProtFeature;
+                            description = hasFeatureDescription.getFeatureDescription().getValue();
+                        }
 
-                Iterator<Feature> iterator = up.getFeatures().iterator();
-                while (iterator.hasNext()) {
-                    Feature uniProtFeature = iterator.next();
+                        logger.debug("Feature Type: " + uniProtFeature.getType().getDisplayName() + " Range: [" + start + ", " + end + "]" + " Description: " + description);
 
-                    // process feature
-                    switch (uniProtFeature.getType()) {
-                        case SIGNAL:
-                        case TRANSMEM:
-                        case TOPO_DOM:
-                        case INTRAMEM:
-                            String description = null;
-                            FeatureLocation featureLocation = uniProtFeature.getFeatureLocation();
-                            int start = featureLocation.getStart();
-                            int end = featureLocation.getEnd();
+                        FeatureType featureType = cvParamProteomesRepository.findFeatureTypeByCvName(uniProtFeature.getType().getName());
 
-                            if (uniProtFeature instanceof HasFeatureDescription) {
-                                final HasFeatureDescription hasFeatureDescription = (HasFeatureDescription) uniProtFeature;
-                                description = hasFeatureDescription.getFeatureDescription().getValue();
-                            }
+                        assert (featureType != null);
+//                            logger.error("The feature: " + uniProtFeature.getType().getDisplayName() + "is not stored in the proteomes database");
 
-                            logger.debug("Feature Type: " + uniProtFeature.getType().getDisplayName() + " Range: [" + start + ", " + end + "]" + " Description: " + description);
+                        uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature feature = new uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature();
+                        feature.setFeatureType(featureType);
+                        feature.setProteinAccession(proteinAccession);
+                        feature.setStartPosition(start);
+                        feature.setEndPosition(end);
+                        feature.setDescription(description);
 
-                            uk.ac.ebi.pride.proteomes.db.core.api.param.FeatureType featureType = cvParamProteomesRepository.findFeatureTypeByCvName(uniProtFeature.getType().getName());
+                        features.add(feature);
 
-                            assert (featureType != null);
-                            //logger.error("The feature: " + uniProtFeature.getType().getDisplayName() + "is not stored in the proteomes database");
-
-                            uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature feature = new uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature();
-                            feature.setFeatureType(featureType);
-                            feature.setProteinAccession(proteinAccession);
-                            feature.setStartPosition(start);
-                            feature.setEndPosition(end);
-                            feature.setDescription(description);
-
-                            features.add(feature);
-
-                            break;
-                        default:
-                            //do nothing
-                    }
+                        break;
+                    default:
+                        //do nothing
                 }
-
             }
-        }
-        if (!features.isEmpty()) {
-            item.getFeatures().addAll(features);
-        }
-        else {
-            //We specified to the batch process that doesn't need to do anything
+            if (!features.isEmpty()) {
+                item.getFeatures().addAll(features);
+            } else {
+                //We specified to the batch process that doesn't need to do anything
+                item = null;
+            }
+
+        } catch (RemoteDataAccessException e) {
+            logger.debug("Uniprot remote service return: " + e.getMessage() + " for protein accession " + proteinAccession + ". This message is normal in the case of an isoform accession.");
             item = null;
         }
         return item;
