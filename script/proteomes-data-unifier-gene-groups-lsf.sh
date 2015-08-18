@@ -14,7 +14,7 @@ cd /nfs/pride/work/proteomes/data-unifier
 #. /etc/profile.d/lsf.sh
 
 
-QUEUE=research-rh6
+QUEUE=production-rh6
 
 
 # Email recipients

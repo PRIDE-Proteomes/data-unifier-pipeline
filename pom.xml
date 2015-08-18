@@ -12,10 +12,10 @@
     <!--
         profiles
         development: db-pride-repo-pridetst, db-pride-proteomes-prideprot-rw-user
-        production: db-pride-repo-pridepro, db-pride-proteomes-prideprot-rw-user
+        production: pride-proteomes
     -->
     <groupId>uk.ac.ebi.pride.proteomes.pipeline</groupId>
-    <artifactId>pride-proteomes-data-unifier</artifactId>
+    <artifactId>data-unifier-pipeline</artifactId>
     <version>1.0.1-SNAPSHOT</version>
 
     <name>PRIDE Proteomes Pipeline</name>
@@ -213,6 +213,10 @@
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpmime</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.noggit</groupId>
+                    <artifactId>noggit</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -221,6 +225,14 @@
             <groupId>uk.ac.ebi.pride.proteomes.db</groupId>
             <artifactId>db-core</artifactId>
             <version>${proteomes.db.core.version}</version>
+        </dependency>
+
+        <!--Noe: I added manually the dependency because in other case is not added to the claspath-->
+        <!--TODO: Investigate the problem with the dependency-->
+        <dependency>
+            <groupId>org.noggit</groupId>
+            <artifactId>noggit</artifactId>
+            <version>0.5</version>
         </dependency>
 
         <!-- proteomes index service -->
@@ -253,11 +265,15 @@
         <dependency>
             <groupId>uk.ac.ebi.uniprot.kraken</groupId>
             <artifactId>uniprotjapi</artifactId>
-            <version>2015.06</version>
+            <version>2015.08</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

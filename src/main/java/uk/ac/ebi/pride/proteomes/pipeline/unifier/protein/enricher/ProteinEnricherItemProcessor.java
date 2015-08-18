@@ -98,7 +98,10 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
         if (!features.isEmpty()) {
             item.getFeatures().addAll(features);
         }
-
+        else {
+            //We specified to the batch process that doesn't need to do anything
+            item = null;
+        }
         return item;
     }
 

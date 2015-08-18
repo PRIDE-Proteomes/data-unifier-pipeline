@@ -33,6 +33,7 @@
             </bean>
         </property>
         <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
+        <property name="contaminant" value="true"/>
     </bean>
 
     <bean id="contaminantLoaderCompositeItemProcessor"
@@ -54,10 +55,6 @@
     <!-- writer -->
     <bean id="contaminantLoaderWriter" class="org.springframework.batch.item.database.JpaItemWriter">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-
-    <bean id="contaminantLoaderLineMapper" scope="step" class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.loader.FastaToProteinLineMapper">
-        <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
     </bean>
 
 </beans>
