@@ -89,7 +89,7 @@
         </batch:step>
 
         <batch:step id="contaminantLoaderStep" next="proteinGroupingStep" >
-            <batch:partition step="partitionProteinLoaderStep"
+            <batch:partition step="partitionContaminantLoaderStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
                 <batch:handler grid-size="4" task-executor="taskExecutor"/>

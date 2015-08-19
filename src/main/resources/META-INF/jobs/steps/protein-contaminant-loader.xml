@@ -24,7 +24,8 @@
 
     <!--Beans for protein loader -->
     <!-- reader -->
-    <!-- TODO: make it configurable. The file has to follow a pattern like contaminant-{taxid}-complete.fasta -->
+    <!-- TODO: make it configurable. The file has to follow a pattern like contaminant-{taxid}-complete.fasta It would be possible to reuse the same
+         configuration that is for non-contaminat protein loader-->
     <bean id="contaminantLoaderReader" scope="step"
           class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.loader.FastaFileItemReader">
         <property name="resource">
