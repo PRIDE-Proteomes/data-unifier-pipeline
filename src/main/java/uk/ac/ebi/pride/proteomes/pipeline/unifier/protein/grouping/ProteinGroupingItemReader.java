@@ -20,9 +20,6 @@ public class ProteinGroupingItemReader implements ResourceAwareItemReaderItemStr
 
     private ResourceAwareItemReaderItemStream<Group> delegate;
 
-
-    // We assume for this reader that the records are sorted by sequence, so when de sequence is different we create a new
-    // PeptideVariant and released the previous one
     @Override
     public Group read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
