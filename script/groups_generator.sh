@@ -2,7 +2,7 @@
 echo -e "\nCleaning previously generated files\n"
 
 rm groups/*.txt
-rm proteins/*.fasta
+rm proteins/uniprot-taxonomy-*-complete.fasta
 
 echo -e "\nDownloading uniprot current release proteomes proteins\n"
 

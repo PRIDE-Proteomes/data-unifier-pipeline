@@ -138,7 +138,6 @@
                             <goal>single</goal>
                         </goals>
                     </execution>
-
                 </executions>
             </plugin>
         </plugins>
