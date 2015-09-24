@@ -11,16 +11,24 @@
 	   http://www.springframework.org/schema/context/spring-context.xsd">
 
     <description>
-        This job allows the creation of the proteomes solr index
+        This job allows the creation of the proteomes solr index. It will delete the previous records in the index
     </description>
 
+    <import resource="classpath:META-INF/jobs/steps/index-cleaner-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/peptiforms-indexer-tasklet.xml"/>
 
 
     <batch:job id="proteomesDataUnifierIndexerJob" xmlns="http://www.springframework.org/schema/batch"
                incrementer="incrementer" job-repository="jobRepository" restartable="true">
 
-        <!--TODO Add a step for deleting the index-->
+        <batch:step id="indexCleanerStep" next="peptiformsIndexerStep" >
+            <batch:tasklet ref="indexCleanerTasklet"/>
+
+            <batch:listeners>
+                <batch:listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
         <batch:step id="peptiformsIndexerStep" >
             <batch:partition step="partitionPeptiformIndexerTaskletStep"
                              partitioner="peptideRangePartitioner">

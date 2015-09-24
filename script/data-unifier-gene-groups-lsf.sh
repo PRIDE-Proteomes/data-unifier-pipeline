@@ -14,15 +14,15 @@ cd /nfs/pride/work/proteomes/data-unifier
 #. /etc/profile.d/lsf.sh
 
 
-QUEUE=research-rh6
+QUEUE=production-rh6
 
 
 # Email recipients
 JOB_MAIL="ntoro@ebi.ac.uk"
-STD_ERR="output/uniqueness-stderr.txt"
-STD_OUT="output/uniqueness-stdout.txt"
-LABEL="proteomes-data-unifier-uniqueness"
-COMMAND="java -Xms1024m -Xmx4096m -jar ${project.build.finalName}.jar launch-data-unifier-indexer-job.xml proteomesDataUnifierIndexerJob -next"
+STD_ERR="output/gene-groups-stderr.txt"
+STD_OUT="output/gene-groups-stdout.txt"
+LABEL="proteomes-data-unifier-gene-groups"
+COMMAND="java -Xms1024m -Xmx4096m -jar ${project.build.finalName}.jar launch-data-unifier-gene-groups-job.xml proteinGeneGroupingJob -next"
 CPUS=4
 
 #submit to LSF

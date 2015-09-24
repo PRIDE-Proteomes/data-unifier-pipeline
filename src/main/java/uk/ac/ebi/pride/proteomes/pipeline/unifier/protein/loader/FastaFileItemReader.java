@@ -53,6 +53,7 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
     private boolean strict = true;
     private BufferedReaderFactory bufferedReaderFactory = new DefaultBufferedReaderFactory();
     private Integer taxid;
+    private Boolean contaminant;
 
     public FastaFileItemReader() {
         setName(ClassUtils.getShortName(FlatFileItemReader.class));
@@ -284,6 +285,8 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
         }
 
         protein.setSequence(record);
+        //Only from the caller we know if this protein is a contaminant or not
+        protein.setContaminant(contaminant);
 
         return protein;
 
@@ -298,6 +301,13 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
     }
 
 
+    public void setContaminant(Boolean contaminant) {
+        this.contaminant = contaminant;
+    }
+
+    public Boolean getContaminant() {
+        return contaminant;
+    }
 }
 
 

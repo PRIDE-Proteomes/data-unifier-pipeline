@@ -11,7 +11,7 @@
             <batch:chunk reader="symbolicPeptideGeneratorReader"
                          processor="symbolicPeptideGeneratorValidator"
                          writer="symbolicPeptideGeneratorWriter"
-                         commit-interval="250" skip-limit="99999">
+                         commit-interval="1000" skip-limit="99999">
                 <batch:skippable-exception-classes>
                     <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
                 </batch:skippable-exception-classes>
@@ -50,11 +50,11 @@
                 <entry key="taxid" value="#{stepExecutionContext['taxid']}"/>
             </map>
         </property>
-        <property name="pageSize" value="250"/>
+        <property name="pageSize" value="500"/>
         <property name="rowMapper">
             <bean class="uk.ac.ebi.pride.proteomes.pipeline.unifier.peptide.symbolic.generator.SymbolicPeptideRowMapper"/>
         </property>
-        <property name="fetchSize" value="500"/>
+        <property name="fetchSize" value="2000"/>
     </bean>
 
     <!-- validator/processor -->
