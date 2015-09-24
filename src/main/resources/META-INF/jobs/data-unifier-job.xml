@@ -27,6 +27,7 @@
     <import resource="classpath:META-INF/jobs/steps/protein-mapping-uniqueness.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-mapping-propagator.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-mapping-degradation.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/index-cleaner-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/peptiforms-indexer-tasklet.xml"/>
 
 
@@ -111,7 +112,7 @@
         </batch:step>
 
         <batch:step id="proteinGeneGroupingStep" next="proteinMappingStep">
-            <batch:partition step="partitionProteinGroupingStep"
+            <batch:partition step="partitionProteinGeneGroupingStep"
                              partitioner="speciesPartitioner" >
                 <!-- the grid-size, should be the same that the number of species -->
                 <batch:handler grid-size="4" task-executor="taskExecutor"/>
@@ -162,7 +163,7 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="proteinMappingPropagatorStep" next="peptiformsIndexerStep" >
+        <batch:step id="proteinMappingPropagatorStep" next="indexCleanerStep" >
             <batch:partition step="partitionProteinMappingPropagatorStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
@@ -170,6 +171,14 @@
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="indexCleanerStep" next="peptiformsIndexerStep" >
+            <batch:tasklet ref="indexCleanerTasklet"/>
+
+            <batch:listeners>
+                <batch:listener ref="stepListener"/>
             </batch:listeners>
         </batch:step>
 
