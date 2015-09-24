@@ -19,8 +19,8 @@ QUEUE=production-rh6
 
 # Email recipients
 JOB_MAIL="ntoro@ebi.ac.uk"
-STD_ERR="output/uniqueness-stderr.txt"
-STD_OUT="output/uniqueness-stdout.txt"
+STD_ERR="output/indexer-stderr.txt"
+STD_OUT="output/indexer-stdout.txt"
 LABEL="proteomes-data-unifier-uniqueness"
 COMMAND="java -Xms1024m -Xmx4096m -jar ${project.build.finalName}.jar launch-data-unifier-indexer-job.xml proteomesDataUnifierIndexerJob -next"
 CPUS=4
