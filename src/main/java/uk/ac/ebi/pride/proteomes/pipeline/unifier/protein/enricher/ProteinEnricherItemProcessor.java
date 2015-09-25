@@ -11,11 +11,11 @@ import uk.ac.ebi.kraken.interfaces.uniprot.features.FeatureLocation;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.HasFeatureDescription;
 import uk.ac.ebi.kraken.uuw.services.remoting.*;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.CvParamProteomesRepository;
+import uk.ac.ebi.pride.proteomes.db.core.api.param.FeatureType;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.Protein;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.ProteinRepository;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -50,16 +50,14 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
             UniProtEntry up = uniProtEntries.next();
 
             if (up.getFeatures() != null) {
-
-                Iterator<Feature> iterator = up.getFeatures().iterator();
-                while (iterator.hasNext()) {
-                    Feature uniProtFeature = iterator.next();
-
+                for (Feature uniProtFeature : up.getFeatures()) {
                     // process feature
                     switch (uniProtFeature.getType()) {
                         case SIGNAL:
                         case TRANSMEM:
-                        case TOPO_DOM:
+                            //Confuse the user, so it has been disabled
+                            //case TOPO_DOM:
+                        case PROPEP:
                         case INTRAMEM:
                             String description = null;
                             FeatureLocation featureLocation = uniProtFeature.getFeatureLocation();
@@ -73,7 +71,7 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
 
                             logger.debug("Feature Type: " + uniProtFeature.getType().getDisplayName() + " Range: [" + start + ", " + end + "]" + " Description: " + description);
 
-                            uk.ac.ebi.pride.proteomes.db.core.api.param.FeatureType featureType = cvParamProteomesRepository.findFeatureTypeByCvName(uniProtFeature.getType().getName());
+                            FeatureType featureType = cvParamProteomesRepository.findFeatureTypeByCvName(uniProtFeature.getType().getName());
 
                             assert (featureType != null);
                             //logger.error("The feature: " + uniProtFeature.getType().getDisplayName() + "is not stored in the proteomes database");
@@ -92,7 +90,6 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
                             //do nothing
                     }
                 }
-
             }
         }
         if (!features.isEmpty()) {
