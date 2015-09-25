@@ -24,7 +24,8 @@
 
     <!--Beans for protein loader -->
     <!-- reader -->
-    <!-- TODO: make it configurable. The file has to follow a pattern like contaminant-{taxid}-complete.fasta -->
+    <!-- TODO: make it configurable. The file has to follow a pattern like contaminant-{taxid}-complete.fasta It would be possible to reuse the same
+         configuration that is for non-contaminat protein loader-->
     <bean id="contaminantLoaderReader" scope="step"
           class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.loader.FastaFileItemReader">
         <property name="resource">
@@ -33,6 +34,7 @@
             </bean>
         </property>
         <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
+        <property name="contaminant" value="true"/>
     </bean>
 
     <bean id="contaminantLoaderCompositeItemProcessor"
@@ -54,10 +56,6 @@
     <!-- writer -->
     <bean id="contaminantLoaderWriter" class="org.springframework.batch.item.database.JpaItemWriter">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-
-    <bean id="contaminantLoaderLineMapper" scope="step" class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.loader.FastaToProteinLineMapper">
-        <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
     </bean>
 
 </beans>
