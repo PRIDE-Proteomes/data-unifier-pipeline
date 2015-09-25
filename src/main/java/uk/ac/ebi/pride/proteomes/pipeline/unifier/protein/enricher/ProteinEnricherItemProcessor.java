@@ -54,8 +54,8 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
                 switch (uniProtFeature.getType()) {
                     case SIGNAL:
                     case TRANSMEM:
-                        //Confuse the user, so it has been disabled
-                        //case TOPO_DOM:
+                    //Confuse the user, so it has been disabled
+                    //case TOPO_DOM:
                     case PROPEP:
                     case INTRAMEM:
                         String description = null;
