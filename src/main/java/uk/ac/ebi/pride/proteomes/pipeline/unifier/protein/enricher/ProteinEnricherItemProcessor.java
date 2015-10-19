@@ -54,7 +54,7 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
                 switch (uniProtFeature.getType()) {
                     case SIGNAL:
                     case TRANSMEM:
-                    case TOPO_DOM:
+                    case PROPEP:
                     case INTRAMEM:
                         String description = null;
                         FeatureLocation featureLocation = uniProtFeature.getFeatureLocation();
