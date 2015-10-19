@@ -1,8 +1,13 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.mapping.propagator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.pride.proteomes.db.core.api.modification.Modification;
 import uk.ac.ebi.pride.proteomes.db.core.api.modification.ModificationLocation;
+import uk.ac.ebi.pride.proteomes.db.core.api.modification.ModificationProteomesRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.CellType;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.Disease;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.Tissue;
@@ -22,6 +27,12 @@ import java.util.TreeSet;
  */
 public class ProteinMappingPropagatorProcessor implements ItemProcessor<Protein, Protein> {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProteinMappingPropagatorProcessor.class);
+
+    @Autowired
+    private ModificationProteomesRepository modificationRepository;
+
+
     @Override
     @Transactional(readOnly = true)
     public Protein process(Protein item) throws Exception {
@@ -40,26 +51,33 @@ public class ProteinMappingPropagatorProcessor implements ItemProcessor<Protein,
 
             //Inside de loop we translate the modifications from peptide position to protein position
             for (ModificationLocation mod : symbolicPeptide.getModificationLocations()) {
-                ModificationLocation aux = new ModificationLocation();
-                aux.setModId(mod.getModId());
-                //n-terminal mod, we propagate the mod only to the n terminal position of the protein
-                if(mod.getPosition()==0 ){
-                    if(peptideProtein.getStartPosition()==1){
-                        aux.setPosition(mod.getPosition() + peptideProtein.getStartPosition() - 1);
-                        mods.add(aux);
-                    }
-                }
-                //c-terminal mod, we propagate the mod only to the c terminal position of the protein
-                else if(mod.getPosition()==symbolicPeptide.getSequence().length()+1){
-                    if(peptideProtein.getStartPosition()==
-                            peptideProtein.getProtein().getSequence().length()-symbolicPeptide.getSequence().length()+1){
-                        aux.setPosition(mod.getPosition() + peptideProtein.getStartPosition() - 1);
-                        mods.add(aux);
+                Modification bioMod = modificationRepository.findByModId(mod.getModId());
+                if(bioMod != null) {
+                    if(bioMod.getBiologicalSignificant()){
+                        ModificationLocation aux = new ModificationLocation();
+                        aux.setModId(mod.getModId());
+                        //n-terminal mod, we propagate the mod only to the n terminal position of the protein
+                        if (mod.getPosition() == 0) {
+                            if (peptideProtein.getStartPosition() == 1) {
+                                aux.setPosition(mod.getPosition() + peptideProtein.getStartPosition() - 1);
+                                mods.add(aux);
+                            }
+                        }
+                        //c-terminal mod, we propagate the mod only to the c terminal position of the protein
+                        else if (mod.getPosition() == symbolicPeptide.getSequence().length() + 1) {
+                            if (peptideProtein.getStartPosition() ==
+                                    peptideProtein.getProtein().getSequence().length() - symbolicPeptide.getSequence().length() + 1) {
+                                aux.setPosition(mod.getPosition() + peptideProtein.getStartPosition() - 1);
+                                mods.add(aux);
+                            }
+                        } else {
+                            aux.setPosition(mod.getPosition() + peptideProtein.getStartPosition() - 1);
+                            mods.add(aux);
+                        }
                     }
                 }
                 else {
-                    aux.setPosition(mod.getPosition() + peptideProtein.getStartPosition() - 1);
-                    mods.add(aux);
+                      logger.warn("The modification with id: " + mod.getModId() + "has not been found in the database");
                 }
             }
         }
