@@ -18,7 +18,18 @@
         <constructor-arg name="solrServer" ref="proteomesSolrServer"/>
     </bean>
 
-    <!--load property files-->
-    <context:property-placeholder location="classpath:prop/pride-proteomes-solr.properties" ignore-unresolvable="true" order="1"/>
+    <!-- Set up or detect a System property called "PROTEOMES_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "test".  -->
+    <!-- See scripts to have a look how to use this environment -->
+    <bean id="indexEnvironment"
+          class="org.springframework.batch.support.SystemPropertyInitializer">
+        <property name="defaultValue" value="dev"/>
+        <property name="keyName" value="INDEX_ENVIRONMENT"/>
+    </bean>
+
+    <bean id="placeholderProperties" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" depends-on="indexEnvironment">
+        <property name="location" value="classpath:prop/pride-proteomes-solr-${INDEX_ENVIRONMENT}.properties"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="order" value="1"/>
+    </bean>
 
 </beans>
