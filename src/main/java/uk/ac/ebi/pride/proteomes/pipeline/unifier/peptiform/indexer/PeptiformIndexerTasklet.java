@@ -44,7 +44,7 @@ public class PeptiformIndexerTasklet implements Tasklet {
         Integer taxId = (Integer) chunkContext.getStepContext().getStepExecutionContext().get(RangePartitioner.TAXID_KEY_NAME);
 
         //By default the index it will not take into account contaminant proteins)
-        ProteomesIndexer indexer = new ProteomesIndexer(proteomesIndexService, peptideRepository, peptideGroupRepository,  peptideProteinRepository, proteomesSolrServer);
+        ProteomesIndexer indexer = new ProteomesIndexer(proteomesIndexService, peptideRepository, proteomesSolrServer);
 
         try {
             indexer.indexBySymbolicPeptidesTaxidAndPeptideIdInterval(taxId, minValue, maxValue, false);
