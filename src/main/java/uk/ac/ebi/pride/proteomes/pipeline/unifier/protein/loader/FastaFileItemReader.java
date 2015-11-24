@@ -18,6 +18,7 @@ import uk.ac.ebi.pride.proteomes.pipeline.unifier.utils.FastaUtils;
 
 import java.io.BufferedReader;
 import java.nio.charset.Charset;
+import java.util.regex.Matcher;
 
 /**
  * Created by IntelliJ IDEA.
@@ -87,13 +88,62 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
             // protein.setDataSource(UNIPROT);
 
             if (data.length > 1) {
-                protein.setDescription(data[2]);
+                addProteinInformationFromDescription(protein, data[2]);
             }
 
         } else {
             throw new NotUniprotRecordException();
         }
     }
+
+    private static void addProteinInformationFromDescription(Protein protein, String description) {
+        String altId = "";
+        String name = "";
+        String species = "";
+        String geneSymbol = "";
+        Integer proteinEvidence = -1;
+
+        String patternStr = "([A-Z_0-9]+)+\\s+(.+)\\s+OS=(.+)\\s+GN=([A-Za-z0-9_]+)(\\sPE=([1-5]).*)?";
+        java.util.regex.Pattern regExp = java.util.regex.Pattern.compile(patternStr);
+        Matcher matcher = regExp.matcher(description);
+        boolean matchFound = matcher.matches();
+
+        altId = description;// just in case the parsing fails
+        if (matchFound) {
+            String match = matcher.group(1);
+            if (match != null && !match.isEmpty()) {
+                altId = match;
+                match = matcher.group(2);
+                if (match != null && !match.isEmpty()) {
+                    name = match;
+                    match = matcher.group(3);
+                    if (match != null && !match.isEmpty()) {
+                        //Nowaday we use the translation from the taxonId to display the Organism
+                        species = match;
+                        match = matcher.group(4);
+                        if (match != null && !match.isEmpty()) {
+                            geneSymbol = match;
+                            match = matcher.group(6);
+                            if (match != null && !match.isEmpty()) {
+                                try {
+                                    proteinEvidence = Integer.parseInt(match);
+                                } catch (NumberFormatException e) {
+                                    //We return  -1 as a protein evidence if the value is not parsable
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        protein.setAlternativeName(altId);
+        protein.setName(name);
+        protein.setGeneSymbol(geneSymbol);
+        protein.setEvidence(proteinEvidence);
+
+    }
+
 
     /**
      * In strict mode the reader will throw an exception on
@@ -300,13 +350,12 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
         this.taxid = taxid;
     }
 
+    public Boolean getContaminant() {
+        return contaminant;
+    }
 
     public void setContaminant(Boolean contaminant) {
         this.contaminant = contaminant;
-    }
-
-    public Boolean getContaminant() {
-        return contaminant;
     }
 }
 
