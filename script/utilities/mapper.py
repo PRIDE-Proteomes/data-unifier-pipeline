@@ -22,7 +22,7 @@ def main(genes, gene_id):
 
             gene_map[gene].add(row[0])  # Proteins
 
-    for key, values in gene_map.viewitems():
+    for key, values in gene_map.items():    # replace items() -> viewitems() in python 2.7
         print ("{0}\tGENE\t{1}\t{2}".format(key, gene_id,",".join(sorted(values))))
 
 if __name__ == '__main__':

@@ -13,24 +13,25 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <tx:annotation-driven/>
-
     <context:annotation-config/>
 
     <!--scans through all the jpa repos-->
-    <jpa:repositories base-package="uk.ac.ebi.pride.proteomes.db.core.api"/>
+    <jpa:repositories base-package="uk.ac.ebi.pride.proteomes.db.core.api"
+                      entity-manager-factory-ref="entityManagerFactory"
+                      transaction-manager-ref="transactionManager"/>
 
     <!--Setup data source using place holder properties-->
     <bean id="proteomesDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="${prot.pipeline.db.jdbc.driver}"/>
-        <property name="url" value="${prot.pipeline.jdbc.url}"/>
-        <property name="username" value="${prot.pipeline.jdbc.user}"/>
-        <property name="password" value="${prot.pipeline.jdbc.password}"/>
+        <property name="driverClassName" value="${pride.prot.jdbc.driver}"/>
+        <property name="url" value="${pride.prot.jdbc.url}"/>
+        <property name="username" value="${pride.prot.jdbc.user}"/>
+        <property name="password" value="${pride.prot.jdbc.password}"/>
         <property name="maxActive" value="6"/>
         <property name="validationQuery" value="select 1 from dual"/>
         <property name="testWhileIdle" value="true"/>
     </bean>
 
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <!--pride-loader beans -->
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -65,13 +66,13 @@
 
     <!-- Set up or detect a System property called "PROTEOMES_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "test".  -->
     <!-- See scripts to have a look how to use this environment -->
-    <bean id="proteomesEnvironment"
+    <bean id="dbEnvironment"
           class="org.springframework.batch.support.SystemPropertyInitializer">
         <property name="defaultValue" value="test"/>
         <property name="keyName" value="DB_ENVIRONMENT"/>
     </bean>
 
-    <bean id="placeholderProperties" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" depends-on="proteomesEnvironment">
+    <bean id="dbPlaceholderProperties" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" depends-on="dbEnvironment">
         <property name="location" value="classpath:prop/db/pride-proteomes-db-${DB_ENVIRONMENT}.properties"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="order" value="1"/>

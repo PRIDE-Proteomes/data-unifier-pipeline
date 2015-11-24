@@ -32,7 +32,7 @@ CPUS=4
 printUsage() {
     echo "Description: Data provider pipeline extracts all the peptiforms from the PRIDE Cluster resource and write them in the PRIDE Proteomes pipeline after and enrichment phase."
     echo ""
-    echo "Usage: ./runDataUnifierGeneGroups.sh [-e|--email] "
+    echo "Usage: ./runDataUnifierGeneGroups.sh -i|--index -d|--database [-e|--email] [-j|--job-params]"
 
     echo "     Example: ./runDataUnifierGeneGroups.sh -e ntoro@ebi.ac.uk -d test -i prod"
     echo "     (required) database: Proteomes database environment -> prod | dev | test"
@@ -56,7 +56,7 @@ while [ "$1" != "" ]; do
         ;;
       "-i" | "--index")
         shift
-        CLUSTER_ENV=$1
+        INDEX_ENV=$1
         ;;
       "-j" | "--job-params")
         shift
@@ -112,4 +112,4 @@ else
 fi
 
 ##### RUN it on the production LSF cluster #####
-bsub  -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M ${MEMORY_LIMIT} rusage[mem=${MEMORY_LIMIT}] -n ${CPUS} -R span[hosts=1] -J ${JOB_NAME} -N -u ${JOB_EMAIL} java -Xmx${MEMORY_LIMIT}m -DDB_ENVIRONMENT=${DB_ENV} -INDEX_ENVIRONMENT=${INDEX_ENV} ${COMMAND} ${JOB_PARAMETERS}
+bsub  -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M ${MEMORY_LIMIT} -R rusage[mem=${MEMORY_LIMIT}] -R span[hosts=1] -n ${CPUS} -J ${JOB_NAME} -N -u ${JOB_EMAIL} java -Xmx${MEMORY_LIMIT}m -DDB_ENVIRONMENT=${DB_ENV} -DINDEX_ENVIRONMENT=${INDEX_ENV} ${COMMAND} ${JOB_PARAMETERS}
