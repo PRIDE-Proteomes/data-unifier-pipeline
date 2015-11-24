@@ -21,7 +21,6 @@
     <import resource="classpath:META-INF/jobs/steps/protein-loader.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-enricher.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-contaminant-loader.xml"/>
-    <import resource="classpath:META-INF/jobs/steps/protein-grouping.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-gene-grouping.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-mapping-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-mapping-uniqueness.xml"/>
@@ -89,7 +88,7 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="contaminantLoaderStep" next="proteinGroupingStep" >
+        <batch:step id="contaminantLoaderStep" next="proteinGeneGroupingStep" >
             <batch:partition step="partitionContaminantLoaderStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
@@ -100,16 +99,6 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="proteinGroupingStep" next="proteinGeneGroupingStep">
-            <batch:partition step="partitionProteinGroupingStep"
-                             partitioner="speciesPartitioner">
-                <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
-            </batch:partition>
-            <batch:listeners>
-                <listener ref="stepListener"/>
-            </batch:listeners>
-        </batch:step>
 
         <batch:step id="proteinGeneGroupingStep" next="proteinMappingStep">
             <batch:partition step="partitionProteinGeneGroupingStep"

@@ -11,11 +11,10 @@
     <solr:repositories base-package="uk.ac.ebi.pride.proteomes.index.repository"/>
     <!-- configure the Solr server -->
 
+    <!--The schema can be load throught the index-service resources, however when running
+    mvn test doesn't resolve the path properly and the tests fail. In the meantime a duplicated schema is added to the pipeline test resources -->
     <solr:embedded-solr-server id="proteomesSolrServer" solrHome="classpath:solr" />
 
-    <!--<bean id="proteomesSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">-->
-        <!--<constructor-arg name="baseURL" value="${solr.server.proteomes.peptiform.core.url}" />-->
-    <!--</bean>-->
     <!-- configure the SolrTemplate to be used by the repositories -->
     <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
         <constructor-arg name="solrServer" ref="proteomesSolrServer"/>

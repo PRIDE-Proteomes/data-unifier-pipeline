@@ -35,7 +35,7 @@ import java.util.*;
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class})
-public class ProteinGroupingWriterIntegrationTest {
+public class ProteinGeneGroupingWriterIntegrationTest {
 
 
     private static final String GENE_ID = "ENSG00000055609";
@@ -48,7 +48,7 @@ public class ProteinGroupingWriterIntegrationTest {
 
 
     @Autowired
-    @Qualifier(value = "proteinGroupingWriter")
+    @Qualifier(value = "proteinGeneGroupingWriter")
     private JpaItemWriter<GeneGroup> jpaItemWriter;
 
     @Autowired

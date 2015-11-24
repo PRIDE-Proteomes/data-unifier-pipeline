@@ -17,8 +17,7 @@
     <groupId>uk.ac.ebi.pride.proteomes.pipeline</groupId>
     <artifactId>data-unifier-pipeline</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-
-    <name>PRIDE Proteomes Pipeline</name>
+    <name>PRIDE Proteomes Data Unifier Pipeline</name>
     <description>This package contains the pipeline for the PRIDE Proteomes database.</description>
     <url>http://www.ebi.ac.uk/pride</url>
     <licenses>
@@ -34,7 +33,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <proteomes.indexer.version>1.0.0</proteomes.indexer.version>
+        <proteomes.indexer.version>1.0.1-SNAPSHOT</proteomes.indexer.version>
 
         <spring.version>3.2.13.RELEASE</spring.version>
         <spring.batch.version>2.2.7.RELEASE</spring.batch.version>
@@ -66,6 +65,12 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <!--compiler-->
             <plugin>
@@ -239,7 +244,7 @@
         <dependency>
             <groupId>uk.ac.ebi.uniprot.kraken</groupId>
             <artifactId>uniprotjapi</artifactId>
-            <version>2015.09</version>
+            <version>2015.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>

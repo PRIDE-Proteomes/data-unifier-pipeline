@@ -44,7 +44,7 @@ public class ProteinEnricherItemProcessorTest {
     private static final String PROTEIN_AC_NO_FEATURES = "Q8NEZ4";
     private static final String PROTEIN_AC_ISO = "C0LGN2-2";
     private static final String PROTEIN_AC_FEATURES = "C0LGN2";
-    private static final int NUM_FEATURES = 4;
+    private static final int NUM_FEATURES = 2;
 
 
     @Test

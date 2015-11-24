@@ -58,7 +58,7 @@ public class ProteinGroupingStepTest {
     @DirtiesContext
     public void launchStep() throws Exception {
         //Testing a individual step
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep("proteinGroupingStep");
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("proteinGeneGroupingStep");
         Assert.assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 
     }

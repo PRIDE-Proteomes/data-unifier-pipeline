@@ -1,6 +1,5 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.grouping;
 
-import uk.ac.ebi.pride.proteomes.db.core.api.protein.groups.EntryGroup;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.groups.GeneGroup;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.groups.ProteinGroup;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.groups.ProteinGroupType;
@@ -16,9 +15,7 @@ public class ProteinGroupFactory {
     public static ProteinGroup createProteinGroup(Group group) {
         ProteinGroup proteinGroup = null;
 
-        if (group.getType().equals(ProteinGroupType.ENTRY.getGroupName())) {
-            proteinGroup = new EntryGroup();
-        } else if (group.getType().equals(ProteinGroupType.GENE.getGroupName())) {
+        if (group.getType().equals(ProteinGroupType.GENE.getGroupName())) {
             proteinGroup = new GeneGroup();
         } else {
             throw new IllegalArgumentException("Unknown Protein Group type.");

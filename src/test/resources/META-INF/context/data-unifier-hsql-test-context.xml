@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="classpath*:META-INF/context/proteomes-hsql-data-source-context.xml"/>
-    <import resource="classpath*:META-INF/context/proteomes-embbeded-solr-context.xml"/>
+    <import resource="classpath*:META-INF/context/proteomes-embbeded-solr-index-context.xml"/>
     <import resource="classpath*:META-INF/context/common-context.xml" />
 
     <import resource="classpath*:META-INF/jobs/data-unifier-job.xml"/>
