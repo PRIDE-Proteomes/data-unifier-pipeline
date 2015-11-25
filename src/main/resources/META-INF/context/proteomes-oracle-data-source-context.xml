@@ -64,7 +64,7 @@
         <property name="isolationLevelForCreate" value="ISOLATION_DEFAULT"/>
     </bean>
 
-    <!-- Set up or detect a System property called "PROTEOMES_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "test".  -->
+    <!-- Set up or detect a System property called "DB_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "test".  -->
     <!-- See scripts to have a look how to use this environment -->
     <bean id="dbEnvironment"
           class="org.springframework.batch.support.SystemPropertyInitializer">
