@@ -18,7 +18,7 @@
         <constructor-arg name="solrServer" ref="proteomesSolrServer"/>
     </bean>
 
-    <!-- Set up or detect a System property called "PROTEOMES_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "test".  -->
+    <!-- Set up or detect a System property called "INDEX_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "dev".  -->
     <!-- See scripts to have a look how to use this environment -->
     <bean id="indexEnvironment"
           class="org.springframework.batch.support.SystemPropertyInitializer">

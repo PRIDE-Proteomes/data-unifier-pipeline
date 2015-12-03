@@ -20,7 +20,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner;
 
 import static org.springframework.batch.test.MetaDataInstanceFactory.createStepExecution;
@@ -61,7 +60,6 @@ public class ProteinMappingTaskletIntegrationTest {
 
     @Test
     @DirtiesContext
-    @Transactional(readOnly = true)
     public void testTasklet() throws Exception {
 
         StepExecution execution = createStepExecution();

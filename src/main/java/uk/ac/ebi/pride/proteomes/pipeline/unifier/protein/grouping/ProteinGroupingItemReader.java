@@ -21,7 +21,7 @@ public class ProteinGroupingItemReader implements ResourceAwareItemReaderItemStr
     private ResourceAwareItemReaderItemStream<Group> delegate;
 
     @Override
-    public Group read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public Group read() throws Exception, ParseException, NonTransientResourceException {
 
         Group aux = null;
 
