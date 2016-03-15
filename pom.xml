@@ -5,7 +5,7 @@
     <parent> <!-- parent POM -->
         <groupId>uk.ac.ebi.pride.proteomes.maven</groupId>
         <artifactId>proteomes-maven-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>uk.ac.ebi.pride.proteomes.pipeline</groupId>
@@ -65,6 +65,10 @@
             <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/fasta</exclude>
+                    <exclude>**/groups</exclude>
+                </excludes>
             </testResource>
         </testResources>
         <plugins>

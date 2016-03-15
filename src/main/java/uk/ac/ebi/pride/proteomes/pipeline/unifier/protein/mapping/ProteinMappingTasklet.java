@@ -51,6 +51,8 @@ public class ProteinMappingTasklet implements Tasklet {
         Iterable<SymbolicPeptide> peptides = peptideRepository.findAllSymbolicPeptidesByTaxidAndPeptideIdBetween(taxId, minValue, maxValue);
         ProteinRowMapper rowMapper = new ProteinRowMapper();
 
+        // Instead of the protein repository, we use jdbcTemplate becasue we want only the proteinId and the sequence.
+        // In the future a method could be add to the protein repository with a projection to retrieve the same information
         List<Protein> proteins = jdbcTemplate.query("SELECT PROTEIN.PROTEIN_ID AS PROTEIN_ID," +
                 " PROTEIN.SEQUENCE AS PROTEIN_SEQUENCE FROM PRIDEPROT.PROTEIN WHERE TAXID = " + taxId, rowMapper);
 

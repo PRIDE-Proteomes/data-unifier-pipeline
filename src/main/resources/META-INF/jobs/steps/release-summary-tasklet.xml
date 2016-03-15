@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/batch
+       http://www.springframework.org/schema/batch/spring-batch.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <batch:step id="partitionReleaseSummaryTaskletStep" xmlns:batch="http://www.springframework.org/schema/batch">
+        <batch:tasklet ref="releaseSummaryTasklet"/>
+        <batch:listeners>
+            <batch:listener ref="stepListener"/>
+            <batch:listener ref="loadPropertiesListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="releaseSummaryTasklet" scope="step"
+          class="uk.ac.ebi.pride.proteomes.pipeline.unifier.release.summary.ReleaseSummaryTasklet">
+        <property name="referenceDatabase" value="${reference.database.#{stepExecutionContext['taxid']}}"/>
+        <property name="referenceDatabaseVersion"
+                  value="${reference.database.version.#{stepExecutionContext['taxid']}}"/>
+    </bean>
+
+    <bean id="loadPropertiesListener" class="uk.ac.ebi.pride.proteomes.pipeline.listener.LoadPropertiesListener"
+          scope="step">
+        <property name="releaseProperties">
+            <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                <property name="location" value="classpath:prop/release.properties"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!--load property files-->
+    <context:property-placeholder location="classpath:prop/release.properties" ignore-unresolvable="true" order="1"/>
+</beans>

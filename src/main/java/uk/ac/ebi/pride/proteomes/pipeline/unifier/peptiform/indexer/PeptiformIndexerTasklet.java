@@ -7,8 +7,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
-import uk.ac.ebi.pride.proteomes.db.core.api.peptide.group.PeptideGroupRepository;
-import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProteinRepository;
 import uk.ac.ebi.pride.proteomes.index.ProteomesIndexer;
 import uk.ac.ebi.pride.proteomes.index.service.ProteomesIndexService;
 import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner;
@@ -23,12 +21,6 @@ public class PeptiformIndexerTasklet implements Tasklet {
 
     @Autowired
     private PeptideRepository peptideRepository;
-
-    @Autowired
-    private PeptideGroupRepository peptideGroupRepository;
-
-    @Autowired
-    private PeptideProteinRepository peptideProteinRepository;
 
     @Resource
     private ProteomesIndexService proteomesIndexService;

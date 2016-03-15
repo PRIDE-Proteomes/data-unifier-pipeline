@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/batch
+       http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <description>
+        This job allows the creation of the proteomes solr index. It will delete the previous records in the index
+    </description>
+
+    <import resource="classpath:META-INF/jobs/steps/release-summary-tasklet.xml"/>
+
+
+    <batch:job id="proteomesDataUnifierReleaseSummaryJob" xmlns="http://www.springframework.org/schema/batch"
+               incrementer="incrementer" job-repository="jobRepository" restartable="true">
+
+        <batch:step id="releaseSummaryStep">
+            <batch:partition step="partitionReleaseSummaryTaskletStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+    </batch:job>
+
+    <!--load property files-->
+    <context:property-placeholder location="classpath:prop/release.properties" ignore-unresolvable="true" order="1"/>
+
+</beans>
