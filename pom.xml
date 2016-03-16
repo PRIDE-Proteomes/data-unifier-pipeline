@@ -66,8 +66,8 @@
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
-                    <exclude>**/fasta</exclude>
-                    <exclude>**/groups</exclude>
+                    <exclude>fasta/**</exclude>
+                    <exclude>groups/**</exclude>
                 </excludes>
             </testResource>
         </testResources>

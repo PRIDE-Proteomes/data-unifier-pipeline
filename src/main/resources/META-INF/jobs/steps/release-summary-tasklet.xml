@@ -19,9 +19,9 @@
 
     <bean id="releaseSummaryTasklet" scope="step"
           class="uk.ac.ebi.pride.proteomes.pipeline.unifier.release.summary.ReleaseSummaryTasklet">
-        <property name="referenceDatabase" value="${reference.database.#{stepExecutionContext['taxid']}}"/>
-        <property name="referenceDatabaseVersion"
-                  value="${reference.database.version.#{stepExecutionContext['taxid']}}"/>
+        <property name="referenceDatabaseKey" value="reference.database.#{stepExecutionContext['taxid']}"/>
+        <property name="referenceDatabaseVersionKey"
+                  value="reference.database.version.#{stepExecutionContext['taxid']}"/>
     </bean>
 
     <bean id="loadPropertiesListener" class="uk.ac.ebi.pride.proteomes.pipeline.listener.LoadPropertiesListener"

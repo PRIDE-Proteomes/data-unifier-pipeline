@@ -1,13 +1,11 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.release.summary;
 
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.ProteinRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.groups.ProteinGroupRepository;
@@ -17,6 +15,7 @@ import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.SpeciesPartitioner
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 /**
  * @author ntoro
@@ -41,22 +40,16 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
     private static final Integer PREDICTED = 4;
     private static final Integer UNCERTAIN = 5;
 
-    private String referenceDatabase;
-    private String referenceDatabaseVersion;
-
-
-    @Value("#{stepExecution}")
-    private StepExecution stepExecution;
-
+    private String referenceDatabaseKey;
+    private String referenceDatabaseVersionKey;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         final Integer taxid = (Integer) chunkContext.getStepContext().getStepExecutionContext().get(SpeciesPartitioner.TAXID_KEY_NAME);
-////        final String referenceDatabase = (String) chunkContext.getStepContext().getStepExecutionContext().get(SpeciesPartitioner.TAXID_KEY_NAME);
-////        final String referenceDatabaseVersion = (String) chunkContext.getStepContext().getStepExecutionContext().get(SpeciesPartitioner.TAXID_KEY_NAME);
-//
-//
+        final String referenceDatabase = (String) ((Properties) chunkContext.getStepContext().getStepExecutionContext().get("releaseProperties")).get(referenceDatabaseKey);
+        final String referenceDatabaseVersion = (String) ((Properties) chunkContext.getStepContext().getStepExecutionContext().get("releaseProperties")).get(referenceDatabaseVersionKey);
+
         //General numbers
         final long numPeptiforms = peptideRepository.countPeptiformsByTaxid(taxid);
         final long numPeptides = peptideRepository.countSymbolicPeptideByTaxid(taxid);
@@ -120,7 +113,7 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
         releaseSummary.setNumMappedUniquePeptidesToGenes(numMappedUniquePeptidesToGenes);
 
         //Proteins with at least one unique peptide
-        releaseSummary.setNumMappedProteinsWithUniquePeptides(numMappedCanonicalProteinsWithUniquePeptides);
+        releaseSummary.setNumMappedProteinsWithUniquePeptides(numMappedProteinsWithUniquePeptides);
         releaseSummary.setNumMappedCanonicalProteinsWithUniquePeptides(numMappedCanonicalProteinsWithUniquePeptides);
         releaseSummary.setNumMappedIsoformProteinsWithUniquePeptides(numMappedIsoformProteinsWithUniquePeptides);
 
@@ -139,19 +132,19 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
         return RepeatStatus.FINISHED;
     }
 
-    public String getReferenceDatabase() {
-        return referenceDatabase;
+    public String getReferenceDatabaseKey() {
+        return referenceDatabaseKey;
     }
 
-    public void setReferenceDatabase(String referenceDatabase) {
-        this.referenceDatabase = referenceDatabase;
+    public void setReferenceDatabaseKey(String referenceDatabaseKey) {
+        this.referenceDatabaseKey = referenceDatabaseKey;
     }
 
-    public String getReferenceDatabaseVersion() {
-        return referenceDatabaseVersion;
+    public String getReferenceDatabaseVersionKey() {
+        return referenceDatabaseVersionKey;
     }
 
-    public void setReferenceDatabaseVersion(String referenceDatabaseVersion) {
-        this.referenceDatabaseVersion = referenceDatabaseVersion;
+    public void setReferenceDatabaseVersionKey(String referenceDatabaseVersionKey) {
+        this.referenceDatabaseVersionKey = referenceDatabaseVersionKey;
     }
 }

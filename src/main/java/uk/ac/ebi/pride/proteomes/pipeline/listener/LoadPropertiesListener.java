@@ -20,7 +20,7 @@ public class LoadPropertiesListener extends StepExecutionListenerSupport {
     @Override
     public void beforeStep(StepExecution stepExecution) {
         super.beforeStep(stepExecution);
-        // Store property file content in jobExecutionContext with name "releaseProperties"
-        stepExecution.getJobExecution().getExecutionContext().put("releaseProperties", releaseProperties);
+        // Store property file content in stepExecutionContext with name "releaseProperties"
+        stepExecution.getExecutionContext().put("releaseProperties", releaseProperties);
     }
 }
