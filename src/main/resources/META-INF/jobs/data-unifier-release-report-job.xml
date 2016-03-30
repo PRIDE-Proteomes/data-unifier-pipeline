@@ -11,17 +11,29 @@
        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <description>
-        This job allows the creation of the release summary.
+        This job allows the creation of the release report that will be publish in the PRIDE ftp.
     </description>
 
-    <import resource="classpath:META-INF/jobs/steps/release-summary-tasklet.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/release-report-peptide-mapping.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/release-report-unique-to gene.xml"/>
 
 
-    <batch:job id="proteomesDataUnifierReleaseSummaryJob" xmlns="http://www.springframework.org/schema/batch"
+    <batch:job id="proteomesDataUnifierReleaseReportJob" xmlns="http://www.springframework.org/schema/batch"
                incrementer="incrementer" job-repository="jobRepository" restartable="true">
 
-        <batch:step id="releaseSummaryStep">
-            <batch:partition step="partitionReleaseSummaryTaskletStep"
+        <batch:step id="releaseReportPeptideMappingStep" next="releaseReportUniqueToGeneStep">
+            <batch:partition step="partitionReleaseReportPeptideMappingStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="releaseReportUniqueToGeneStep">
+            <batch:partition step="partitionReleaseReportUniqueToGeneStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
                 <batch:handler grid-size="4" task-executor="taskExecutor"/>
@@ -34,6 +46,6 @@
     </batch:job>
 
     <!--load property files-->
-    <context:property-placeholder location="classpath:prop/release.properties" ignore-unresolvable="true" order="1"/>
+    <context:property-placeholder location="classpath:prop/data-unifier.properties" ignore-unresolvable="true" order="1"/>
 
 </beans>

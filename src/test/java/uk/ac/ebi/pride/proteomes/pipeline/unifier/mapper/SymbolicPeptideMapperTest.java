@@ -21,7 +21,6 @@ public class SymbolicPeptideMapperTest {
         SymbolicPeptideRowMapper mapper = new SymbolicPeptideRowMapper();
         mapper.mapRow(resultSet, 1);
 
-
         verify(resultSet, times(1)).getString(SymbolicPeptideRowMapper.SEQUENCE_COLUMN);
         verify(resultSet, times(1)).getInt(SymbolicPeptideRowMapper.TAXID_COLUMN);
 

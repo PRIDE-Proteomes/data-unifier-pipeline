@@ -1,4 +1,4 @@
-package uk.ac.ebi.pride.proteomes.pipeline.listener;
+package uk.ac.ebi.pride.proteomes.pipeline.listener.release;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.listener.StepExecutionListenerSupport;

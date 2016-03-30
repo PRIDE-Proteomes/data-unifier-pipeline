@@ -18,7 +18,10 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.RangePartitioner;
 import uk.ac.ebi.pride.proteomes.pipeline.unifier.partitioner.SpeciesPartitioner;
+
+import java.util.Properties;
 
 import static org.springframework.batch.test.MetaDataInstanceFactory.createStepExecution;
 
@@ -48,9 +51,18 @@ public class ReleaseSummaryTaskletIntegrationTest {
 
         StepExecution execution = createStepExecution();
         execution.getExecutionContext().putInt(SpeciesPartitioner.TAXID_KEY_NAME, 9606);
+        execution.getExecutionContext().putInt(RangePartitioner.TAXID_KEY_NAME, 9606);
+
+        Properties properties = new Properties();
+        properties.put("reference.database.9606", "UP000005640");
+        properties.put("reference.database.version.9606", "2016_02");
+
+        execution.getExecutionContext().put("releaseProperties",properties);
+
 
         ChunkContext chunkContext = new ChunkContext(new StepContext(execution));
         StepContribution stepContribution = new StepContribution(execution);
+
 
         releaseSummaryTasklet.execute(stepContribution, chunkContext);
 

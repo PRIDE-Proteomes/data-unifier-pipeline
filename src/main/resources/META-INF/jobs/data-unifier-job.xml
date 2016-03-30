@@ -29,6 +29,8 @@
     <import resource="classpath:META-INF/jobs/steps/index-cleaner-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/peptiforms-indexer-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/release-summary-tasklet.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/release-report-peptide-mapping.xml"/>
+
 
 
     <batch:job id="proteomesDataUnifierJob" xmlns="http://www.springframework.org/schema/batch"
@@ -182,8 +184,19 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="releaseSummaryStep" >
+        <batch:step id="releaseSummaryStep" next="releaseReportPeptideMappingStep" >
             <batch:partition step="partitionReleaseSummaryTaskletStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
+        <batch:step id="releaseReportPeptideMappingStep" >
+            <batch:partition step="partitionReleaseReportPeptideMappingStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
                 <batch:handler grid-size="4" task-executor="taskExecutor"/>

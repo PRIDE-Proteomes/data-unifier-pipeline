@@ -24,7 +24,7 @@
                   value="reference.database.version.#{stepExecutionContext['taxid']}"/>
     </bean>
 
-    <bean id="loadPropertiesListener" class="uk.ac.ebi.pride.proteomes.pipeline.listener.LoadPropertiesListener"
+    <bean id="loadPropertiesListener" class="uk.ac.ebi.pride.proteomes.pipeline.listener.release.LoadPropertiesListener"
           scope="step">
         <property name="releaseProperties">
             <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
