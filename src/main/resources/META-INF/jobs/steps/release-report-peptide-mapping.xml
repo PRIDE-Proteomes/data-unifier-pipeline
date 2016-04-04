@@ -16,6 +16,10 @@
                 <batch:skippable-exception-classes>
                     <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
                 </batch:skippable-exception-classes>
+                <batch:streams>
+                    <batch:stream ref="releaseUniquePeptidesReportPeptideMappingWriter" />
+                    <batch:stream ref="releaseGeneralReportPeptideMappingWriter" />
+                </batch:streams>
             </batch:chunk>
         </batch:tasklet>
         <batch:listeners>
@@ -35,46 +39,76 @@
                 <property name="selectClause">
                     <value>
                         <![CDATA[
-                            PEPTIDE.PEPTIDE_ID AS PEPTIDE_ID,
-                            PEPTIDE.SEQUENCE AS PEPTIDE_SEQUENCE,
-                            PEP_PROT.START_POSITION AS START_POSITION,
-                            PEP_PROT.UNIQUENESS AS NUM_PROTEIN_MAPPINGS,
-                            PEP_PROT.PROTEIN_ID AS PROTEIN_ACCESSION,
-                            PROTEIN.EVIDENCE AS PROTEIN_EVIDENCE,
-                            PROT_GENES.PROT_GROUP_ID AS GENE_ID,
-                            PEPTIDE.TAXID AS TAXID
+                            PROTEIN_MAPPING.PEPTIDE_ID           AS PEPTIDE_ID,
+                            PROTEIN_MAPPING.PEPTIDE_SEQUENCE     AS PEPTIDE_SEQUENCE,
+                            PROTEIN_MAPPING.START_POSITION       AS START_POSITION,
+                            PROTEIN_MAPPING.NUM_PROTEIN_MAPPINGS AS NUM_PROTEIN_MAPPINGS,
+                            PROTEIN_MAPPING.PROTEIN_ACCESSION    AS PROTEIN_ACCESSION,
+                            PROTEIN_MAPPING.PROTEIN_EVIDENCE     AS PROTEIN_EVIDENCE,
+                            GENE_MAPPING.NUM_GENE_MAPPINGS       AS NUM_GENE_MAPPINGS,
+                            GENE_MAPPING.GENE_ID                 AS GENE_ID,
+                            PROTEIN_MAPPING.TAXID                AS TAXID
                         ]]>
                     </value>
                 </property>
                 <property name="fromClause" >
                     <value>
                         <![CDATA[
-                            PRIDEPROT.PEPTIDE,
-                            PRIDEPROT.PEP_PROT,
-                            PRIDEPROT.PROTEIN LEFT JOIN
-                            (SELECT
-                                PROT_PGRP.PROT_GROUP_ID,
-                                PROTEIN_ID
-                            FROM
-                                PRIDEPROT.PROT_GROUP,
-                                PRIDEPROT.PROT_PGRP
-                            WHERE
-                                PROT_GROUP.PROT_GROUP_ID = PROT_PGRP.PROT_GROUP_ID
-                                AND PROT_GROUP.PROT_GROUP_TYPE='GENE'
-                            ) PROT_GENES
-                            ON PROT_GENES.PROTEIN_ID = PROTEIN.PROTEIN_ID AND PROTEIN.CONTAMINANT = 'F'
+                              (select PEPTIDE.PEPTIDE_ID as PEPTIDE_ID,
+                                PEPTIDE.sequence         as PEPTIDE_SEQUENCE,
+                                PEP_PROT.START_POSITION  as START_POSITION,
+                                PEP_PROT.UNIQUENESS      as NUM_PROTEIN_MAPPINGS,
+                                PEP_PROT.PROTEIN_ID      as PROTEIN_ACCESSION,
+                                PROTEIN.EVIDENCE         as PROTEIN_EVIDENCE,
+                                PROT_GENES.PROT_GROUP_ID as GENE_ID,
+                                PEPTIDE.TAXID            as TAXID
+                              from PRIDEPROT.PEPTIDE,
+                                PRIDEPROT.PEP_PROT,
+                                PRIDEPROT.PROTEIN
+                              left join
+                                (select PROT_PGRP.PROT_GROUP_ID,
+                                  PROT_PGRP.PROTEIN_ID
+                                from PRIDEPROT.PROT_GROUP,
+                                  PRIDEPROT.PROT_PGRP
+                                where PROT_GROUP.PROT_GROUP_ID = PROT_PGRP.PROT_GROUP_ID
+                                and PROT_GROUP.PROT_GROUP_TYPE ='GENE'
+                                ) PROT_GENES
+                              on PROT_GENES.PROTEIN_ID = PROTEIN.PROTEIN_ID
+                              and PROTEIN.CONTAMINANT  = 'F'
+                              where PEPTIDE.PEPTIDE_ID = PEP_PROT.PEPTIDE_ID
+                              and PROTEIN.PROTEIN_ID   = PEP_PROT.PROTEIN_ID
+                              and PEPTIDE.SYMBOLIC     ='TRUE'
+                              and PEPTIDE.TAXID        = :TAXID
+                              )PROTEIN_MAPPING
+                            full outer join
+                              (select PEP_TO_PROTS.PEPTIDE_ID      as PEPTIDE_ID,
+                                PEP_TO_PROTS.sequence              as PEPTIDE_SEQUENCE,
+                                PRIDEPROT.PEP_PGROUP.UNIQUENESS    as NUM_GENE_MAPPINGS,
+                                PRIDEPROT.PEP_PGROUP.PROT_GROUP_ID as GENE_ID,
+                                PEP_TO_PROTS.TAXID                 as TAXID
+                              from
+                                (select distinct PEPTIDE.PEPTIDE_ID ,
+                                  PEPTIDE.SYMBOLIC,
+                                  PEPTIDE.sequence,
+                                  PEPTIDE.TAXID
+                                from PRIDEPROT.PEPTIDE,
+                                  PRIDEPROT.PEP_PROT,
+                                  PRIDEPROT.PROTEIN
+                                where
+                                  PEPTIDE.PEPTIDE_ID=PEP_PROT.PEPTIDE_ID
+                                  and PEP_PROT.PROTEIN_ID =PROTEIN.PROTEIN_ID
+                                  and PROTEIN.CONTAMINANT = 'F'
+                                ) PEP_TO_PROTS
+                              left join PRIDEPROT.PEP_PGROUP
+                              on PEP_TO_PROTS.PEPTIDE_ID                  = PEP_PGROUP.PEPTIDE_ID
+                              and PEP_PGROUP.PROT_GROUP_TYPE              ='GENE'
+                              and PEP_TO_PROTS.SYMBOLIC                   ='TRUE'
+                              and PEP_TO_PROTS.TAXID                      = :TAXID
+                              ) GENE_MAPPING
+                            on PROTEIN_MAPPING.PEPTIDE_ID                 =GENE_MAPPING.PEPTIDE_ID
+                            and PROTEIN_MAPPING.PEPTIDE_SEQUENCE          =GENE_MAPPING.PEPTIDE_SEQUENCE
+                            and PROTEIN_MAPPING.GENE_ID                   =GENE_MAPPING.GENE_ID
                            ]]>
-                    </value>
-                </property>
-                <!--When we generate the input from the peptides we need to be sure about the species-->
-                <property name="whereClause">
-                    <value>
-                        <![CDATA[
-                            PEPTIDE.PEPTIDE_ID = PEP_PROT.PEPTIDE_ID
-                            and PROTEIN.PROTEIN_ID = PEP_PROT.PROTEIN_ID
-                            and PEPTIDE.SYMBOLIC='TRUE'
-                            and PEPTIDE.TAXID = :taxid
-                       ]]>
                     </value>
                 </property>
                 <property name="sortKeys">
@@ -119,7 +153,26 @@
 
 
     <!-- writer -->
-    <bean id="releaseReportPeptideMappingWriter"  scope="step" class="org.springframework.batch.item.file.FlatFileItemWriter">
+    <bean id="releaseReportPeptideMappingWriter" scope="step"
+          class="org.springframework.batch.item.support.ClassifierCompositeItemWriter">
+        <property name="classifier">
+            <bean class="org.springframework.classify.BackToBackPatternClassifier">
+                <property name="routerDelegate">
+                    <bean class="uk.ac.ebi.pride.proteomes.pipeline.unifier.release.report.classifier.UniquePeptideClassifier" />
+                </property>
+                <property name="matcherMap">
+                    <map>
+                        <entry key="true"
+                               value-ref="releaseUniquePeptidesReportPeptideMappingWriter" />
+                        <entry key="*"
+                               value-ref="releaseGeneralReportPeptideMappingWriter" />
+                    </map>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="releaseGeneralReportPeptideMappingWriter"  scope="step" class="org.springframework.batch.item.file.FlatFileItemWriter">
         <property name="resource"
                   value="file:${output.file.dir}#{stepExecutionContext['taxid']}/${peptide.mapping.report.prefix}#{stepExecutionContext['taxid']}${peptide.mapping.report.postfix}.tsv"/>
         <property name="headerCallback" ref="headerCallback"/>
@@ -132,7 +185,7 @@
                 <property name="fieldExtractor">
                     <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
                         <property name="names"
-                                  value="peptideSequence, startPosition, length, numProteinMappings, uniquePeptideToProtein, proteinAccession, proteinEvidence, gene, tissues, taxid"/>
+                                  value="peptideSequence, startPosition, length, numProteinMappings, uniquePeptideToProtein, proteinAccession, proteinEvidence, numGeneMappings, uniquePeptideToGene, gene, tissues, taxid"/>
                     </bean>
                 </property>
             </bean>
@@ -140,6 +193,26 @@
         </property>
     </bean>
 
+    <bean id="releaseUniquePeptidesReportPeptideMappingWriter"  scope="step" class="org.springframework.batch.item.file.FlatFileItemWriter">
+        <property name="resource"
+                  value="file:${output.file.dir}#{stepExecutionContext['taxid']}/${unique.peptide.mapping.report.prefix}#{stepExecutionContext['taxid']}${unique.peptide.mapping.report.postfix}.tsv"/>
+        <property name="headerCallback" ref="headerCallback"/>
+        <property name="lineAggregator">
+            <bean class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+                <property name="delimiter">
+                    <util:constant
+                            static-field="org.springframework.batch.item.file.transform.DelimitedLineTokenizer.DELIMITER_TAB"/>
+                </property>
+                <property name="fieldExtractor">
+                    <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
+                        <property name="names"
+                                  value="peptideSequence, startPosition, length, numProteinMappings, uniquePeptideToProtein, proteinAccession, proteinEvidence, numGeneMappings, uniquePeptideToGene, gene, tissues, taxid"/>
+                    </bean>
+                </property>
+            </bean>
+
+        </property>
+    </bean>
 
     <bean id="headerCallback"
           class="uk.ac.ebi.pride.proteomes.pipeline.unifier.release.report.callback.ReleaseReportPeptideMappingHeaderCallback"/>

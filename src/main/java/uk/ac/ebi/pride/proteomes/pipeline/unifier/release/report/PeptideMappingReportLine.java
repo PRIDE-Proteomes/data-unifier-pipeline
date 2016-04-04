@@ -12,9 +12,10 @@ public class PeptideMappingReportLine {
     private Integer length;
     private Long numProteinMappings;
     private String uniquePeptideToProtein;
-    private String uniquePeptideToGene;
     private String proteinAccession;
     private String proteinEvidence;
+    private Long numGeneMappings;
+    private String uniquePeptideToGene;
     private String gene;
     private String tissues;
     private Long taxid;
@@ -67,14 +68,6 @@ public class PeptideMappingReportLine {
         this.uniquePeptideToProtein = uniquePeptideToProtein;
     }
 
-    public String getUniquePeptideToGene() {
-        return uniquePeptideToGene;
-    }
-
-    public void setUniquePeptideToGene(String uniquePeptideToGene) {
-        this.uniquePeptideToGene = uniquePeptideToGene;
-    }
-
     public String getProteinAccession() {
         return proteinAccession;
     }
@@ -89,6 +82,22 @@ public class PeptideMappingReportLine {
 
     public void setProteinEvidence(String proteinEvidence) {
         this.proteinEvidence = proteinEvidence;
+    }
+
+    public String getUniquePeptideToGene() {
+        return uniquePeptideToGene;
+    }
+
+    public void setUniquePeptideToGene(String uniquePeptideToGene) {
+        this.uniquePeptideToGene = uniquePeptideToGene;
+    }
+
+    public Long getNumGeneMappings() {
+        return numGeneMappings;
+    }
+
+    public void setNumGeneMappings(Long numGeneMappings) {
+        this.numGeneMappings = numGeneMappings;
     }
 
     public String getGene() {
@@ -118,11 +127,18 @@ public class PeptideMappingReportLine {
     @Override
     public String toString() {
         return "PeptideMappingReportLine{" +
-                "peptideSequence='" + peptideSequence + '\'' +
+                "peptideId=" + peptideId +
+                ", peptideSequence='" + peptideSequence + '\'' +
                 ", startPosition=" + startPosition +
+                ", length=" + length +
                 ", numProteinMappings=" + numProteinMappings +
                 ", uniquePeptideToProtein='" + uniquePeptideToProtein + '\'' +
                 ", proteinAccession='" + proteinAccession + '\'' +
+                ", proteinEvidence='" + proteinEvidence + '\'' +
+                ", numGeneMappings=" + numGeneMappings +
+                ", uniquePeptideToGene='" + uniquePeptideToGene + '\'' +
+                ", gene='" + gene + '\'' +
+                ", tissues='" + tissues + '\'' +
                 ", taxid=" + taxid +
                 '}';
     }

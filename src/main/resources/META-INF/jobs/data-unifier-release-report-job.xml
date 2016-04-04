@@ -11,17 +11,16 @@
        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <description>
-        This job allows the creation of the release report that will be publish in the PRIDE ftp.
+        This job allows the creation of the release report that will be published in the PRIDE ftp.
     </description>
 
     <import resource="classpath:META-INF/jobs/steps/release-report-peptide-mapping.xml"/>
-    <import resource="classpath:META-INF/jobs/steps/release-report-unique-to gene.xml"/>
 
 
     <batch:job id="proteomesDataUnifierReleaseReportJob" xmlns="http://www.springframework.org/schema/batch"
                incrementer="incrementer" job-repository="jobRepository" restartable="true">
 
-        <batch:step id="releaseReportPeptideMappingStep" next="releaseReportUniqueToGeneStep">
+        <batch:step id="releaseReportPeptideMappingStep">
             <batch:partition step="partitionReleaseReportPeptideMappingStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
@@ -31,18 +30,6 @@
                 <listener ref="stepListener"/>
             </batch:listeners>
         </batch:step>
-
-        <batch:step id="releaseReportUniqueToGeneStep">
-            <batch:partition step="partitionReleaseReportUniqueToGeneStep"
-                             partitioner="speciesPartitioner">
-                <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
-            </batch:partition>
-            <batch:listeners>
-                <listener ref="stepListener"/>
-            </batch:listeners>
-        </batch:step>
-
     </batch:job>
 
     <!--load property files-->

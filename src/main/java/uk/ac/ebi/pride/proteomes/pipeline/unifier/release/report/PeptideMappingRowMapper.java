@@ -17,6 +17,7 @@ public class PeptideMappingRowMapper implements RowMapper<PeptideMappingReportLi
     public static final String NUM_PROTEIN_MAPPINGS_COLUMN = "NUM_PROTEIN_MAPPINGS";
     public static final String PROTEIN_ACCESSION_COLUMN = "PROTEIN_ACCESSION";
     public static final String PROTEIN_EVIDENCE_COLUMN = "PROTEIN_EVIDENCE";
+    public static final String NUM_GENE_MAPPINGS_COLUMN = "NUM_GENE_MAPPINGS";
     public static final String GENE_COLUMN = "GENE_ID";
     public static final String TAXID_COLUMN = "TAXID";
 
@@ -43,13 +44,14 @@ public class PeptideMappingRowMapper implements RowMapper<PeptideMappingReportLi
         lineReport.setProteinAccession(resultSet.getString(PROTEIN_ACCESSION_COLUMN));
         lineReport.setProteinEvidence(resultSet.getString(PROTEIN_EVIDENCE_COLUMN));
 
-//        final long numGeneMappings = resultSet.getLong(NUM_GENE_MAPPINGS_COLUMN);
-//        String geneUniqueness = "false";
-//        if(numGeneMappings ==  1){
-//            geneUniqueness = "true";
-//        }
-//
-//        lineReport.setUniquePeptideToGene(geneUniqueness);
+        final long numGeneMappings = resultSet.getLong(NUM_GENE_MAPPINGS_COLUMN);
+        lineReport.setNumGeneMappings(numGeneMappings);
+        String geneUniqueness = "false";
+        if(numGeneMappings ==  1){
+            geneUniqueness = "true";
+        }
+
+        lineReport.setUniquePeptideToGene(geneUniqueness);
         String gene = resultSet.getString(GENE_COLUMN);
         if(gene == null || gene.isEmpty()){
             gene = "-";

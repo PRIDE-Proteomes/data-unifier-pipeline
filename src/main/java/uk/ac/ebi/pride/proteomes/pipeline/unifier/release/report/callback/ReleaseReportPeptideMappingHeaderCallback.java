@@ -13,6 +13,6 @@ import java.io.Writer;
 public class ReleaseReportPeptideMappingHeaderCallback extends StepExecutionListenerSupport implements FlatFileHeaderCallback {
     @Override
     public void writeHeader(Writer writer) throws IOException {
-        writer.write("peptide_sequence\tstart_position\tlength\tnum_protein_mappings\tunique_to_protein\tprotein_accession\tprotein_evidence\tgene\ttissues\ttaxid");
+        writer.write("peptide_sequence\tstart_position\tlength\tnum_protein_mappings\tunique_to_protein\tprotein_accession\tprotein_evidence\tnum_gene_mappings\tunique_to_gene\tgene\ttissues\ttaxid");
     }
 }
