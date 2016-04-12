@@ -15,7 +15,7 @@
     </bean>
     <!-- configure the SolrTemplate to be used by the repositories -->
     <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
-        <constructor-arg name="solrServer" ref="proteomesSolrServer"/>
+        <constructor-arg name="solrClient" ref="proteomesSolrServer"/>
     </bean>
 
     <!-- Set up or detect a System property called "INDEX_ENVIRONMENT" used to construct a properties file on the classpath.  The default is "dev".  -->

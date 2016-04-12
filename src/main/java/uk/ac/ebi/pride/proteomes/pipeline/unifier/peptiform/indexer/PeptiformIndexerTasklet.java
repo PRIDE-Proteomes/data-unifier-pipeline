@@ -1,6 +1,6 @@
 package uk.ac.ebi.pride.proteomes.pipeline.unifier.peptiform.indexer;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -26,7 +26,7 @@ public class PeptiformIndexerTasklet implements Tasklet {
     private ProteomesIndexService proteomesIndexService;
 
     @Autowired
-    private SolrServer proteomesSolrServer;
+    private SolrClient proteomesSolrClient;
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -36,7 +36,7 @@ public class PeptiformIndexerTasklet implements Tasklet {
         Integer taxId = (Integer) chunkContext.getStepContext().getStepExecutionContext().get(RangePartitioner.TAXID_KEY_NAME);
 
         //By default the index it will not take into account contaminant proteins)
-        ProteomesIndexer indexer = new ProteomesIndexer(proteomesIndexService, peptideRepository, proteomesSolrServer);
+        ProteomesIndexer indexer = new ProteomesIndexer(proteomesIndexService, peptideRepository, proteomesSolrClient);
 
         try {
             indexer.indexBySymbolicPeptidesTaxidAndPeptideIdInterval(taxId, minValue, maxValue, false);
