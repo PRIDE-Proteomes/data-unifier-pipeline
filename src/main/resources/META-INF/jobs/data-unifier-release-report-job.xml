@@ -24,7 +24,7 @@
             <batch:partition step="partitionReleaseReportPeptideMappingStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>

@@ -7,7 +7,7 @@ JOB_NAME="proteomes-data-unifier-release-summary"
 # the job parameters that are going to be passed on to the job (build below)
 JOB_PARAMETERS="-next"
 # memory limit
-MEMORY_LIMIT=15000
+MEMORY_LIMIT=1000
 # LSF email notification
 JOB_EMAIL="ntoro@ebi.ac.uk"
 # LSF command to run
@@ -25,7 +25,7 @@ STD_OUT="output/release-summary-stdout.txt"
 QUEUE="production-rh6"
 
 #CPUS
-CPUS=4
+CPUS=9
 
 
 ##### FUNCTIONS
@@ -87,4 +87,4 @@ else
 fi
 
 ##### RUN it on the production LSF cluster #####
-bsub  -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M ${MEMORY_LIMIT} -R rusage[mem=${MEMORY_LIMIT}] -R span[hosts=1] -n ${CPUS} -J ${JOB_NAME} -N -u ${JOB_EMAIL} java -Xmx${MEMORY_LIMIT}m -DDB_ENVIRONMENT=${DB_ENV} ${COMMAND} ${JOB_PARAMETERS}
+bsub  -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M ${MEMORY_LIMIT} -R rusage[mem=${MEMORY_LIMIT}] -R span[hosts=1] -n ${CPUS} -J ${JOB_NAME} -N -u ${JOB_EMAIL} /nfs/pride/work/java/jdk1.8.0_65/bin/java -Xmx${MEMORY_LIMIT}m -DDB_ENVIRONMENT=${DB_ENV} ${COMMAND} ${JOB_PARAMETERS}

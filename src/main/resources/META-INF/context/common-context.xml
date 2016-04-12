@@ -77,6 +77,36 @@
                 <value>3702</value>
                 <!-- Rat -->
                 <value>10116</value>
+                <!--Danio rerio-->
+                <value>7955</value>
+                <!--Saccharomyces cerevisiae-->
+                <!--<value>4932</value>-->
+                <!--Saccharomyces cerevisiae S288c-->
+                <value>559292</value>
+                <!--Saccharomyces cerevisiae YJM789-->
+                <!--<value>307796</value>-->
+                <!--Escherichia coli-->
+                <!--<value>562</value>-->
+                <!--Escherichia coli K-12-->
+                <value>83333</value>
+                <!--Escherichia coli O157:H7 str. EDL933-->
+                <!--<value>155864</value>-->
+                <!--Escherichia coli O157:H7 str. TW14359-->
+                <!--<value>544404</value>-->
+                <!--Escherichia coli str. K-12 substr. MG1655-->
+                <!--<value>511145</value>-->
+                <!--Schizosaccharomyces pombe-->
+                <!--<value>4896</value>-->
+                <!--Schizosaccharomyces pombe 927-->
+                <!--<value>1264690</value>-->
+                <!--Schizosaccharomyces pombe 972h- -->
+                <value>284812</value>
+                <!--Drosophila-->
+                <!--<value>7215</value>-->
+                <!--Drosophila melanogaster-->
+                <value>7227</value>
+                <!--Oryza sativa-->
+                <!--<value>4530</value>-->
             </list>
         </constructor-arg>
     </bean>

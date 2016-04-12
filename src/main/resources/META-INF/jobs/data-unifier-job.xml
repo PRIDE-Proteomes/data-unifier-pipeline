@@ -40,7 +40,7 @@
             <batch:partition step="partitionSymbolicPeptideGeneratorStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -51,7 +51,7 @@
             <batch:partition step="partitionSymbolicPeptideFilterStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -62,7 +62,7 @@
             <batch:partition step="partitionSymbolicPeptidePropagatorStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -73,7 +73,7 @@
             <batch:partition step="partitionProteinLoaderStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -84,7 +84,7 @@
             <batch:partition step="partitionProteinEnricherStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -95,7 +95,7 @@
             <batch:partition step="partitionContaminantLoaderStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -107,7 +107,7 @@
             <batch:partition step="partitionProteinGeneGroupingStep"
                              partitioner="speciesPartitioner" >
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -128,7 +128,7 @@
             <batch:partition step="partitionProteinMappingUniquenessStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -155,40 +155,42 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="proteinMappingPropagatorStep" next="indexCleanerStep" >
+        <batch:step id="proteinMappingPropagatorStep" next="releaseSummaryStep" >
+        <!--<batch:step id="proteinMappingPropagatorStep" next="indexCleanerStep" >-->
             <batch:partition step="partitionProteinMappingPropagatorStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="indexCleanerStep" next="peptiformsIndexerStep" >
-            <batch:tasklet ref="indexCleanerTasklet"/>
+        <!--Indexing commented until solr 5 installation is ready. This step can be run independently after-->
+        <!--<batch:step id="indexCleanerStep" next="peptiformsIndexerStep" >-->
+            <!--<batch:tasklet ref="indexCleanerTasklet"/>-->
 
-            <batch:listeners>
-                <batch:listener ref="stepListener"/>
-            </batch:listeners>
-        </batch:step>
+            <!--<batch:listeners>-->
+                <!--<batch:listener ref="stepListener"/>-->
+            <!--</batch:listeners>-->
+        <!--</batch:step>-->
 
-        <batch:step id="peptiformsIndexerStep" next="releaseSummaryStep" >
-            <batch:partition step="partitionPeptiformIndexerTaskletStep"
-                             partitioner="peptideRangePartitioner">
-                <batch:handler grid-size="30" task-executor="taskExecutor"/>
-            </batch:partition>
-            <batch:listeners>
-                <listener ref="stepListener"/>
-            </batch:listeners>
-        </batch:step>
+        <!--<batch:step id="peptiformsIndexerStep" next="releaseSummaryStep" >-->
+            <!--<batch:partition step="partitionPeptiformIndexerTaskletStep"-->
+                             <!--partitioner="peptideRangePartitioner">-->
+                <!--<batch:handler grid-size="30" task-executor="taskExecutor"/>-->
+            <!--</batch:partition>-->
+            <!--<batch:listeners>-->
+                <!--<listener ref="stepListener"/>-->
+            <!--</batch:listeners>-->
+        <!--</batch:step>-->
 
         <batch:step id="releaseSummaryStep" next="releaseReportPeptideMappingStep" >
             <batch:partition step="partitionReleaseSummaryTaskletStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>
@@ -199,7 +201,7 @@
             <batch:partition step="partitionReleaseReportPeptideMappingStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
-                <batch:handler grid-size="4" task-executor="taskExecutor"/>
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
             </batch:partition>
             <batch:listeners>
                 <listener ref="stepListener"/>

@@ -25,7 +25,7 @@ STD_OUT="output/gene-groups-stdout.txt"
 QUEUE="production-rh6"
 
 #CPUS
-CPUS=4
+CPUS=9
 
 
 ##### FUNCTIONS
@@ -112,4 +112,4 @@ else
 fi
 
 ##### RUN it on the production LSF cluster #####
-bsub  -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M ${MEMORY_LIMIT} -R rusage[mem=${MEMORY_LIMIT}] -R span[hosts=1] -n ${CPUS} -J ${JOB_NAME} -N -u ${JOB_EMAIL} java -Xmx${MEMORY_LIMIT}m -DDB_ENVIRONMENT=${DB_ENV} -DINDEX_ENVIRONMENT=${INDEX_ENV} ${COMMAND} ${JOB_PARAMETERS}
+bsub  -q ${QUEUE} -e ${STD_ERR} -o ${STD_OUT} -M ${MEMORY_LIMIT} -R rusage[mem=${MEMORY_LIMIT}] -R span[hosts=1] -n ${CPUS} -J ${JOB_NAME} -N -u ${JOB_EMAIL} /nfs/pride/work/java/jdk1.8.0_65/bin/java -Xmx${MEMORY_LIMIT}m -DDB_ENVIRONMENT=${DB_ENV} -DINDEX_ENVIRONMENT=${INDEX_ENV} ${COMMAND} ${JOB_PARAMETERS}

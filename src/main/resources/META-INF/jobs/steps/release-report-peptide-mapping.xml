@@ -78,7 +78,7 @@
                               where PEPTIDE.PEPTIDE_ID = PEP_PROT.PEPTIDE_ID
                               and PROTEIN.PROTEIN_ID   = PEP_PROT.PROTEIN_ID
                               and PEPTIDE.SYMBOLIC     ='TRUE'
-                              and PEPTIDE.TAXID        = :TAXID
+                              and PEPTIDE.TAXID        = :taxid
                               )PROTEIN_MAPPING
                             full outer join
                               (select PEP_TO_PROTS.PEPTIDE_ID      as PEPTIDE_ID,
@@ -103,7 +103,7 @@
                               on PEP_TO_PROTS.PEPTIDE_ID                  = PEP_PGROUP.PEPTIDE_ID
                               and PEP_PGROUP.PROT_GROUP_TYPE              ='GENE'
                               and PEP_TO_PROTS.SYMBOLIC                   ='TRUE'
-                              and PEP_TO_PROTS.TAXID                      = :TAXID
+                              and PEP_TO_PROTS.TAXID                      = :taxid
                               ) GENE_MAPPING
                             on PROTEIN_MAPPING.PEPTIDE_ID                 =GENE_MAPPING.PEPTIDE_ID
                             and PROTEIN_MAPPING.PEPTIDE_SEQUENCE          =GENE_MAPPING.PEPTIDE_SEQUENCE
