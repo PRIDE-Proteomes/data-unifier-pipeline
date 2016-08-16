@@ -27,8 +27,8 @@ public class SymbolicPeptideValidatorTest {
             "GPAVLIMCFYWHKRQNEDST";
 
     private static final String WRONG_SEQUENCE = "GPA1LI";
-    private static final String RIGHT_SEQUENCE = "GPAVLI";
-    private static final String REPRESENTATION = "[GPAVLI|9606]";
+    private static final String RIGHT_SEQUENCE = "GPAVLIM";
+    private static final String REPRESENTATION = "[GPAVLIM|9606]";
 
     private BeanValidationValidator<SymbolicPeptide> validator;
     private SymbolicPeptide symbolicPeptide;
