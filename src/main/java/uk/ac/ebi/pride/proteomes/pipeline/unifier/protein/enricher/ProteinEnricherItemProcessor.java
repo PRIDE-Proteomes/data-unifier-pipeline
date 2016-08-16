@@ -26,7 +26,7 @@ import java.util.Set;
  * @author ntoro
  * @since 11/06/15 14:23
  */
-public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Protein> {
+public class ProteinEnricherItemProcessor implements ItemProcessor<String, Protein> {
 
     private static final Logger logger = LoggerFactory.getLogger(ProteinEnricherItemProcessor.class);
 
@@ -36,79 +36,18 @@ public class ProteinEnricherItemProcessor implements ItemProcessor<Protein, Prot
     @Autowired
     CvParamProteomesRepository cvParamProteomesRepository;
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Protein process(Protein item) throws Exception {
-//
-//        String proteinAccession = item.getProteinAccession();
-//        logger.debug("Protein Accession: " + proteinAccession);
-//
-//        Set<uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature> features = new HashSet<uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature>();
-//
-//        //TODO Move the query service outside of the pipeline if it keeps growing
-//        EntryRetrievalService entryRetrievalService = UniProtJAPI.factory.getEntryRetrievalService();
-//
-//        try {
-//            Collection<Feature> collection = (Collection<Feature>) entryRetrievalService.getUniProtAttribute(proteinAccession, "ognl:features");
-//
-//            for (Feature uniProtFeature : collection) {
-//                // process feature
-//                switch (uniProtFeature.getType()) {
-//                    case SIGNAL:
-//                    case TRANSMEM:
-//                    case PROPEP:
-//                    case INTRAMEM:
-//                        String description = null;
-//                        FeatureLocation featureLocation = uniProtFeature.getFeatureLocation();
-//                        int start = featureLocation.getStart();
-//                        int end = featureLocation.getEnd();
-//
-//                        if (uniProtFeature instanceof HasFeatureDescription) {
-//                            final HasFeatureDescription hasFeatureDescription = (HasFeatureDescription) uniProtFeature;
-//                            description = hasFeatureDescription.getFeatureDescription().getValue();
-//                        }
-//
-//                        logger.debug("Feature Type: " + uniProtFeature.getType().getDisplayName() + " Range: [" + start + ", " + end + "]" + " Description: " + description);
-//
-//                        FeatureType featureType = cvParamProteomesRepository.findFeatureTypeByCvName(uniProtFeature.getType().getName());
-//
-//                        assert (featureType != null);
-////                            logger.error("The feature: " + uniProtFeature.getType().getDisplayName() + "is not stored in the proteomes database");
-//
-//                        uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature feature = new uk.ac.ebi.pride.proteomes.db.core.api.feature.Feature();
-//                        feature.setFeatureType(featureType);
-//                        feature.setProteinAccession(proteinAccession);
-//                        feature.setStartPosition(start);
-//                        feature.setEndPosition(end);
-//                        feature.setDescription(description);
-//
-//                        features.add(feature);
-//
-//                        break;
-//                    default:
-//                        //do nothing
-//                }
-//            }
-//            if (!features.isEmpty()) {
-//                item.getFeatures().addAll(features);
-//            } else {
-//                //We specified to the batch process that doesn't need to do anything
-//                item = null;
-//            }
-//
-//        } catch (RemoteDataAccessException e) {
-//            logger.debug("Uniprot remote service return: " + e.getMessage() + " for protein accession " + proteinAccession + ". This message is normal in the case of an isoform accession.");
-//            item = null;
-//        }
-//        return item;
-//    }
-
-
 //   Version for the beta api 0.0.2 compatibility problems with solr 5
 
     @Override
     @Transactional(readOnly = true)
-    public Protein process(Protein item) throws Exception {
+    public Protein process(String itemId) throws Exception {
+
+
+        Protein item = proteinRepository.findOne(itemId);
+        if (item == null) {
+            logger.error("A protein with protein accession "+ itemId +" cannot be found in the db");
+            return null;
+        }
 
         String proteinAccession = item.getProteinAccession();
         logger.debug("Protein Accession: " + proteinAccession);

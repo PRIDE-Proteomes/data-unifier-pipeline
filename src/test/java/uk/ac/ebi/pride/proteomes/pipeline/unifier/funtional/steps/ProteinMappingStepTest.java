@@ -8,9 +8,9 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 
 /**
  * User: ntoro
@@ -19,8 +19,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@Rollback
 @ContextConfiguration(locations = {"classpath:/META-INF/context/data-unifier-hsql-test-context.xml"})
-@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 public class ProteinMappingStepTest {
 
     @Autowired

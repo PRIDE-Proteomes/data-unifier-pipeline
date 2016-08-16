@@ -8,12 +8,12 @@ import org.springframework.batch.test.StepScopeTestExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
@@ -25,8 +25,9 @@ import uk.ac.ebi.pride.proteomes.db.core.api.peptide.SymbolicPeptide;
  * Time: 10:32
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@Rollback
+@Transactional(transactionManager = "transactionManager")
 @ContextConfiguration(locations = {"classpath*:/META-INF/context/data-unifier-hsql-test-context.xml"})
-@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @TestExecutionListeners(listeners = {
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,
@@ -42,7 +43,7 @@ public class SymbolicPeptidePropagatorProcessorTest {
 
     @Autowired
     @Qualifier(value = "symbolicPeptidePropagatorProcessor")
-    private ItemProcessor<SymbolicPeptide,SymbolicPeptide> itemProcessor;
+    private ItemProcessor<Long, SymbolicPeptide> itemProcessor;
 
     @Autowired
     private PeptideRepository peptideRepository;
@@ -56,7 +57,7 @@ public class SymbolicPeptidePropagatorProcessorTest {
     public void testProcess() throws Exception {
 
         SymbolicPeptide item = peptideRepository.findSymbolicPeptideBySequenceAndTaxid(SEQUENCE, TAXID);
-        SymbolicPeptide other = itemProcessor.process(item);
+        SymbolicPeptide other = itemProcessor.process(item.getPeptideId());
 
         Assert.assertEquals(other.getAssays().size(), NUM_ASSAYS);
         Assert.assertEquals(other.getTissues().size(), NUM_TISSUES);

@@ -11,9 +11,9 @@ import uk.ac.ebi.pride.proteomes.db.core.api.modification.ModificationLocation;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.CellType;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.Disease;
 import uk.ac.ebi.pride.proteomes.db.core.api.param.Tissue;
+import uk.ac.ebi.pride.proteomes.db.core.api.peptide.Peptide;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.Peptiform;
-import uk.ac.ebi.pride.proteomes.db.core.api.peptide.SymbolicPeptide;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ import java.util.*;
  * Date: 27/01/2014
  * Time: 10:00
  */
-public class SymbolicPeptidePropagatorProcessor implements ItemProcessor<SymbolicPeptide, SymbolicPeptide> {
+public class SymbolicPeptidePropagatorProcessor implements ItemProcessor<Long, Peptide> {
 
     private static final Logger logger = LoggerFactory.getLogger(SymbolicPeptidePropagatorProcessor.class);
 
@@ -31,9 +31,16 @@ public class SymbolicPeptidePropagatorProcessor implements ItemProcessor<Symboli
 
     @Override
     @Transactional(readOnly = true)
-    public SymbolicPeptide process(SymbolicPeptide item) throws Exception {
+    public Peptide process(Long itemId) throws Exception {
 
         List<Peptiform> peptiforms;
+
+        Peptide item = peptideRepository.findOne(itemId);
+
+        if (item == null) {
+            logger.error("A symbolic peptide with id " + itemId + " cannot be found in the db");
+            return null;
+        }
 
         peptiforms = peptideRepository.findPeptiformBySequenceAndTaxid(item.getSequence(), item.getTaxid());
 
@@ -59,7 +66,7 @@ public class SymbolicPeptidePropagatorProcessor implements ItemProcessor<Symboli
             // We filter the modification without location from the propagation to the peptide
             // level. If not they will be map to the protein in a wrong location because the value is -1
             for (ModificationLocation modificationLocation : peptiform.getModificationLocations()) {
-                if(modificationLocation.getPosition() > 0){
+                if (modificationLocation.getPosition() > 0) {
                     //Unknown position is reported as -1
                     mods.add(modificationLocation);
                 }

@@ -37,7 +37,7 @@ import static org.springframework.batch.test.MetaDataInstanceFactory.createStepE
         StepScopeTestExecutionListener.class})
 public class ProteinGeneGroupingReaderIntegrationTest {
 
-    private static final int GENE_GROUPS_IN_FILE = 11;
+    private static final int GENE_GROUPS_IN_FILE = 228;
 
     @Autowired
     @Qualifier(value = "proteinGeneGroupingReader")

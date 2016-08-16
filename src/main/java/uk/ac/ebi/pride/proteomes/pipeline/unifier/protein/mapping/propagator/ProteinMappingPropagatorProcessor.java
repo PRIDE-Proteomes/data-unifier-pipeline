@@ -14,6 +14,7 @@ import uk.ac.ebi.pride.proteomes.db.core.api.param.Tissue;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.SymbolicPeptide;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.protein.PeptideProtein;
 import uk.ac.ebi.pride.proteomes.db.core.api.protein.Protein;
+import uk.ac.ebi.pride.proteomes.db.core.api.protein.ProteinRepository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,22 +26,30 @@ import java.util.TreeSet;
  * Date: 27/01/2014
  * Time: 09:34
  */
-public class ProteinMappingPropagatorProcessor implements ItemProcessor<Protein, Protein> {
+public class ProteinMappingPropagatorProcessor implements ItemProcessor<String, Protein> {
 
     private static final Logger logger = LoggerFactory.getLogger(ProteinMappingPropagatorProcessor.class);
 
     @Autowired
     private ModificationProteomesRepository modificationRepository;
 
+    @Autowired
+    private ProteinRepository proteinRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public Protein process(Protein item) throws Exception {
+    public Protein process(String itemId) throws Exception {
 
         Set<CellType> cellTypes = new HashSet<CellType>();
         Set<Disease> diseases = new HashSet<Disease>();
         Set<Tissue> tissues = new HashSet<Tissue>();
         SortedSet<ModificationLocation> mods = new TreeSet<ModificationLocation>();
+
+        Protein item = proteinRepository.findOne(itemId);
+        if (item == null) {
+            logger.error("A protein with protein accession "+ itemId +" cannot be found in the db");
+            return null;
+        }
 
         for (PeptideProtein peptideProtein : item.getPeptides()) {
             SymbolicPeptide symbolicPeptide = (SymbolicPeptide) peptideProtein.getPeptide();

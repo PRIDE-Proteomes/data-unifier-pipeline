@@ -8,12 +8,12 @@ import org.springframework.batch.test.StepScopeTestExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.pride.proteomes.db.core.api.peptide.PeptideRepository;
@@ -28,8 +28,9 @@ import java.util.Collection;
  * Time: 10:32
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@Rollback
+@Transactional(transactionManager = "transactionManager")
 @ContextConfiguration(locations = {"classpath*:/META-INF/context/data-unifier-uniqueness-hsql-test-context.xml"})
-@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @TestExecutionListeners(listeners = {
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,
@@ -41,7 +42,7 @@ public class ProteinMappingUniquenessProcessorTest {
 
     @Autowired
     @Qualifier(value = "proteinMappingUniquenessProcessor")
-    private ItemProcessor<SymbolicPeptide,Collection<PeptideProtein>> itemProcessor;
+    private ItemProcessor<Long,Collection<PeptideProtein>> itemProcessor;
 
     @Autowired
     private PeptideRepository peptideRepository;
@@ -55,7 +56,7 @@ public class ProteinMappingUniquenessProcessorTest {
     public void testProcess() throws Exception {
 
         SymbolicPeptide item = peptideRepository.findSymbolicPeptideBySequenceAndTaxid(SEQUENCE, TAXID);
-        Collection<PeptideProtein> other = itemProcessor.process(item);
+        Collection<PeptideProtein> other = itemProcessor.process(item.getPeptideId());
 
         int count = 0;
         for (PeptideProtein peptideProtein : other) {
