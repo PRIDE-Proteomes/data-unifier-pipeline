@@ -55,6 +55,7 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
     private BufferedReaderFactory bufferedReaderFactory = new DefaultBufferedReaderFactory();
     private Integer taxid;
     private Boolean contaminant;
+    private Boolean isoform;
 
     public FastaFileItemReader() {
         setName(ClassUtils.getShortName(FlatFileItemReader.class));
@@ -96,6 +97,7 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
         }
     }
 
+    //TODO Improve reg ex
     private static void addProteinInformationFromDescription(Protein protein, String description) {
         String altId = "";
         String name = "";
@@ -103,7 +105,7 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
         String geneSymbol = "";
         Integer proteinEvidence = -1;
 
-        String patternStr = "([A-Z_0-9]+)+\\s+(.+)\\s+OS=(.+)\\s+GN=([A-Za-z0-9_]+)(\\sPE=([1-5]).*)?";
+        String patternStr = "([A-Z_0-9]+)+\\s(.+)\\s+OS=(.+)\\s+GN=([A-Za-z0-9_\\-\\.]+)(\\sPE=([1-5])*)?(\\sSV=([1-5]).*)?";
         java.util.regex.Pattern regExp = java.util.regex.Pattern.compile(patternStr);
         Matcher matcher = regExp.matcher(description);
         boolean matchFound = matcher.matches();
@@ -335,8 +337,9 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
         }
 
         protein.setSequence(record);
-        //Only from the caller we know if this protein is a contaminant or not
+        //Only from the caller we know if this protein is a contaminant or an isoform
         protein.setContaminant(contaminant);
+        protein.setIsoform(isoform);
 
         return protein;
 
@@ -356,6 +359,14 @@ public class FastaFileItemReader extends AbstractItemCountingItemStreamItemReade
 
     public void setContaminant(Boolean contaminant) {
         this.contaminant = contaminant;
+    }
+
+    public Boolean getIsoform() {
+        return isoform;
+    }
+
+    public void setIsoform(Boolean isoform) {
+        this.isoform = isoform;
     }
 }
 
