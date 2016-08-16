@@ -27,6 +27,8 @@
     <logger name="org.springframework.batch.item" level="ERROR" />
     <logger name="org.springframework.jdbc" level="ERROR" />
     <logger name="org.springframework.beans" level="ERROR" />
+    <!--<logger name="org.springframework.orm.jpa" level="INFO" />-->
+    <!--<logger name="org.springframework.orm.jpa.vendor" level="ERROR" />-->
     <!--<logger name="org.hibernate.param" level="debug" />-->
     <!--<logger name="org.hibernate.sql" level="debug" />-->
     <!--<logger name="org.hibernate.type" level="trace" />-->
