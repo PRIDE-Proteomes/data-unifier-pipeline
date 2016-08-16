@@ -5,11 +5,11 @@
 
     <!-- Step to load the proteins in PRIDE Proteomes -->
     <!-- The input data is the FASTA file with the proteins to load -->
-    <batch:step id="partitionProteinLoaderStep">
+    <batch:step id="partitionIsoformLoaderStep">
         <batch:tasklet start-limit="5" transaction-manager="transactionManager">
-            <batch:chunk reader="proteinLoaderReader"
-                         processor="proteinLoaderCompositeItemProcessor"
-                         writer="proteinLoaderWriter"
+            <batch:chunk reader="isoformLoaderReader"
+                         processor="isoformLoaderCompositeItemProcessor"
+                         writer="isoformLoaderWriter"
                          commit-interval="250" skip-limit="99999">
                 <batch:skippable-exception-classes>
                     <batch:include class="org.springframework.batch.item.validator.ValidationException"/>
@@ -24,37 +24,38 @@
 
     <!--Beans for protein loader -->
     <!-- reader -->
-    <!-- TODO: make it configurable. The file has to follow a pattern like uniprot-taxonomy-{taxid}.fasta -->
-    <bean id="proteinLoaderReader" scope="step"
+    <!-- TODO: make it configurable. The file has to follow a pattern like uniprot-taxid-{taxid}-isoforms.fasta It would be possible to reuse the same
+         configuration that is for non-contaminat protein loader-->
+    <bean id="isoformLoaderReader" scope="step"
           class="uk.ac.ebi.pride.proteomes.pipeline.unifier.protein.loader.FastaFileItemReader">
         <property name="resource">
             <bean class="org.springframework.core.io.FileSystemResource">
-                <constructor-arg value="${fasta.file.dir}${protein.fasta.file.prefix}#{stepExecutionContext['taxid']}${protein.fasta.file.postfix}.fasta"/>
+                <constructor-arg value="${fasta.file.dir}${isoform.fasta.file.prefix}#{stepExecutionContext['taxid']}${isoform.fasta.file.postfix}.fasta"/>
             </bean>
         </property>
         <property name="taxid" value="#{stepExecutionContext['taxid']}"/>
+        <property name="isoform" value="true"/>
         <property name="contaminant" value="false"/>
-        <property name="isoform" value="false"/>
     </bean>
 
-    <bean id="proteinLoaderCompositeItemProcessor"
+    <bean id="isoformLoaderCompositeItemProcessor"
           class="org.springframework.batch.item.support.CompositeItemProcessor">
         <property name="delegates">
             <list>
-                <ref bean="proteinLoaderValidator" />
+                <ref bean="isoformLoaderValidator" />
             </list>
         </property>
     </bean>
 
     <!-- validator/processor -->
-    <bean id="proteinLoaderValidator"
+    <bean id="isoformLoaderValidator"
           class="org.springframework.batch.item.validator.ValidatingItemProcessor">
         <property name="filter" value="false"/>
         <property name="validator" ref="defaultValidator"/>
     </bean>
 
     <!-- writer -->
-    <bean id="proteinLoaderWriter" class="org.springframework.batch.item.database.JpaItemWriter">
+    <bean id="isoformLoaderWriter" class="org.springframework.batch.item.database.JpaItemWriter">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
