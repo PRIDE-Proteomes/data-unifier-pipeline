@@ -19,6 +19,7 @@
     <import resource="classpath:META-INF/jobs/steps/symbolic-peptide-propagator.xml"/>
     <import resource="classpath:META-INF/jobs/steps/symbolic-peptide-trypticity.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-loader.xml"/>
+    <import resource="classpath:META-INF/jobs/steps/protein-isoform-loader.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-enricher.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-contaminant-loader.xml"/>
     <import resource="classpath:META-INF/jobs/steps/protein-gene-grouping.xml"/>
@@ -30,7 +31,6 @@
     <import resource="classpath:META-INF/jobs/steps/peptiforms-indexer-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/release-summary-tasklet.xml"/>
     <import resource="classpath:META-INF/jobs/steps/release-report-peptide-mapping.xml"/>
-
 
 
     <batch:job id="proteomesDataUnifierJob" xmlns="http://www.springframework.org/schema/batch"
@@ -69,7 +69,7 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="proteinLoaderStep" next="proteinEnricherStep" >
+        <batch:step id="proteinLoaderStep" next="proteinIsoformLoeaderStep" >
             <batch:partition step="partitionProteinLoaderStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
@@ -79,6 +79,18 @@
                 <listener ref="stepListener"/>
             </batch:listeners>
         </batch:step>
+
+        <batch:step id="proteinIsoformLoeaderStep" next="proteinEnricherStep" >
+            <batch:partition step="partitionIsoformLoaderStep"
+                             partitioner="speciesPartitioner">
+                <!-- the grid-size, should be the same that the number of species -->
+                <batch:handler grid-size="9" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+
 
         <batch:step id="proteinEnricherStep" next="contaminantLoaderStep" >
             <batch:partition step="partitionProteinEnricherStep"
@@ -155,8 +167,7 @@
             </batch:listeners>
         </batch:step>
 
-        <batch:step id="proteinMappingPropagatorStep" next="releaseSummaryStep" >
-        <!--<batch:step id="proteinMappingPropagatorStep" next="indexCleanerStep" >-->
+        <batch:step id="proteinMappingPropagatorStep" next="indexCleanerStep" >
             <batch:partition step="partitionProteinMappingPropagatorStep"
                              partitioner="speciesPartitioner">
                 <!-- the grid-size, should be the same that the number of species -->
@@ -167,24 +178,23 @@
             </batch:listeners>
         </batch:step>
 
-        <!--Indexing commented until solr 5 installation is ready. This step can be run independently after-->
-        <!--<batch:step id="indexCleanerStep" next="peptiformsIndexerStep" >-->
-            <!--<batch:tasklet ref="indexCleanerTasklet"/>-->
+        <batch:step id="indexCleanerStep" next="peptiformsIndexerStep" >
+            <batch:tasklet ref="indexCleanerTasklet"/>
 
-            <!--<batch:listeners>-->
-                <!--<batch:listener ref="stepListener"/>-->
-            <!--</batch:listeners>-->
-        <!--</batch:step>-->
+            <batch:listeners>
+                <batch:listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
 
-        <!--<batch:step id="peptiformsIndexerStep" next="releaseSummaryStep" >-->
-            <!--<batch:partition step="partitionPeptiformIndexerTaskletStep"-->
-                             <!--partitioner="peptideRangePartitioner">-->
-                <!--<batch:handler grid-size="30" task-executor="taskExecutor"/>-->
-            <!--</batch:partition>-->
-            <!--<batch:listeners>-->
-                <!--<listener ref="stepListener"/>-->
-            <!--</batch:listeners>-->
-        <!--</batch:step>-->
+        <batch:step id="peptiformsIndexerStep" next="releaseSummaryStep" >
+            <batch:partition step="partitionPeptiformIndexerTaskletStep"
+                             partitioner="peptideRangePartitioner">
+                <batch:handler grid-size="30" task-executor="taskExecutor"/>
+            </batch:partition>
+            <batch:listeners>
+                <listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
 
         <batch:step id="releaseSummaryStep" next="releaseReportPeptideMappingStep" >
             <batch:partition step="partitionReleaseSummaryTaskletStep"
