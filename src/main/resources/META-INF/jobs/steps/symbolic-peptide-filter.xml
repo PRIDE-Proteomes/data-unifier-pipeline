@@ -40,6 +40,7 @@
                     </value>
                 </property>
                 <property name="fromClause" >
+                <!--we check if modifications are only in the n-term and c-term-->
                 <value>
                     <![CDATA[
                         PRIDEPROT.PEPTIDE,
