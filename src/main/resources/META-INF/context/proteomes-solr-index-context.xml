@@ -10,7 +10,7 @@
     <!-- scan for Solr repositories -->
     <solr:repositories base-package="uk.ac.ebi.pride.proteomes.index.repository"/>
     <!-- configure the Solr server -->
-    <bean id="proteomesSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
+    <bean id="proteomesSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrClient">
         <constructor-arg name="baseURL" value="${solr.server.proteomes.peptiform.core.url}" />
     </bean>
     <!-- configure the SolrTemplate to be used by the repositories -->
