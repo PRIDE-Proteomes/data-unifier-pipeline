@@ -176,6 +176,7 @@
         <property name="resource"
                   value="file:${output.file.dir}#{stepExecutionContext['taxid']}/${peptide.mapping.report.prefix}#{stepExecutionContext['taxid']}${peptide.mapping.report.postfix}.tsv"/>
         <property name="headerCallback" ref="headerCallback"/>
+        <property name="saveState" value="false"/>
         <property name="lineAggregator">
             <bean class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
                 <property name="delimiter">
@@ -197,6 +198,7 @@
         <property name="resource"
                   value="file:${output.file.dir}#{stepExecutionContext['taxid']}/${unique.peptide.mapping.report.prefix}#{stepExecutionContext['taxid']}${unique.peptide.mapping.report.postfix}.tsv"/>
         <property name="headerCallback" ref="headerCallback"/>
+        <property name="saveState" value="false"/>
         <property name="lineAggregator">
             <bean class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
                 <property name="delimiter">
