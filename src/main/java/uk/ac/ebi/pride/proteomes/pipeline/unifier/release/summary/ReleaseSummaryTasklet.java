@@ -85,7 +85,7 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
         final long numMappedProteinWithEvidencePredicted = proteinRepository.countByTaxidAndEvidence(taxid, PREDICTED);
         final long numMappedProteinWithEvidenceUncertain = proteinRepository.countByTaxidAndEvidence(taxid, UNCERTAIN);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         ReleaseSummary releaseSummary = new ReleaseSummary(taxid, sdf.format(new Date()));
 
         releaseSummary.setReferenceDatabase(referenceDatabase);
