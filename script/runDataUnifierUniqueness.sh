@@ -30,7 +30,7 @@ CPUS=9
 
 ##### FUNCTIONS
 printUsage() {
-    echo "Description: Data provider pipeline extracts all the peptiforms from the PRIDE Cluster resource and write them in the PRIDE Proteomes pipeline after and enrichment phase."
+    echo "Description: Data unifier uniqueness pipeline."
     echo ""
     echo "Usage: ./runDataUnifierUniqueness.sh -i|--index -d|--database [-e|--email] [-j|--job-params]"
 
