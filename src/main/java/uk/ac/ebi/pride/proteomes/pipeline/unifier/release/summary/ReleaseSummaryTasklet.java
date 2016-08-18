@@ -35,10 +35,13 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
     @Autowired
     private ReleaseSummaryRepository releaseSummaryRepository;
 
+    private static final Integer EXPERIMENT_LEVEL = 1;
     private static final Integer TRANSCRIPT_LEVEL = 2;
     private static final Integer INFERRED_BY_HOMOLOGY = 3;
     private static final Integer PREDICTED = 4;
     private static final Integer UNCERTAIN = 5;
+    private static final Integer NOT_REPORTED = -1;
+
 
     private String referenceDatabaseKey;
     private String referenceDatabaseVersionKey;
@@ -79,11 +82,22 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
         //Genes with at least one unique peptide
         final long numMappedGenesWithUniquePeptides = proteinGroupRepository.countGeneGroupsByTaxidAndHasUniquePeptides(taxid);
 
-        //Protein evidence
-        final long numMappedProteinsWithExpEvidenceAtTranscript = proteinRepository.countByTaxidAndEvidence(taxid, TRANSCRIPT_LEVEL);
-        final long numMappedProteinsWithEvidenceInferredByHomology = proteinRepository.countByTaxidAndEvidence(taxid, INFERRED_BY_HOMOLOGY);
-        final long numMappedProteinWithEvidencePredicted = proteinRepository.countByTaxidAndEvidence(taxid, PREDICTED);
-        final long numMappedProteinWithEvidenceUncertain = proteinRepository.countByTaxidAndEvidence(taxid, UNCERTAIN);
+        //General protein evidence for proteins
+        final long numProteinsWithExpEvidence = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminant(taxid, EXPERIMENT_LEVEL);
+        final long numProteinsWithExpEvidenceAtTranscript = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminant(taxid, TRANSCRIPT_LEVEL);
+        final long numProteinsWithEvidenceInferredByHomology = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminant(taxid, INFERRED_BY_HOMOLOGY);
+        final long numProteinWithEvidencePredicted = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminant(taxid, PREDICTED);
+        final long numProteinWithEvidenceUncertain = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminant(taxid, UNCERTAIN);
+        final long numProteinWithEvidenceNotReported = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminant(taxid, NOT_REPORTED);
+
+        //Protein evidence for mapped proteins
+        final long numMappedProteinsWithExpEvidence = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminantAndHasPeptides(taxid, EXPERIMENT_LEVEL);
+        final long numMappedProteinsWithExpEvidenceAtTranscript = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminantAndHasPeptides(taxid, TRANSCRIPT_LEVEL);
+        final long numMappedProteinsWithEvidenceInferredByHomology = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminantAndHasPeptides(taxid, INFERRED_BY_HOMOLOGY);
+        final long numMappedProteinWithEvidencePredicted = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminantAndHasPeptides(taxid, PREDICTED);
+        final long numMappedProteinWithEvidenceUncertain = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminantAndHasPeptides(taxid, UNCERTAIN);
+        final long numMappedProteinWithEvidenceNotReported = proteinRepository.countByTaxidAndEvidenceAndIsNotContaminantAndHasPeptides(taxid, NOT_REPORTED);
+
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         ReleaseSummary releaseSummary = new ReleaseSummary(taxid, sdf.format(new Date()));
@@ -120,12 +134,21 @@ public class ReleaseSummaryTasklet implements Tasklet, StepListener {
         //Genes with at least one unique peptide
         releaseSummary.setNumMappedGenesWithUniquePeptides(numMappedGenesWithUniquePeptides);
 
+        //General protein evidence for proteins
+        releaseSummary.setNumProteinsWithExpEvidence(numProteinsWithExpEvidence);
+        releaseSummary.setNumProteinsWithExpEvidenceAtTranscript(numProteinsWithExpEvidenceAtTranscript);
+        releaseSummary.setNumProteinsWithEvidenceInferredByHomology(numProteinsWithEvidenceInferredByHomology);
+        releaseSummary.setNumProteinsWithEvidencePredicted(numProteinWithEvidencePredicted);
+        releaseSummary.setNumProteinsWithEvidenceUncertain(numProteinWithEvidenceUncertain);
+        releaseSummary.setNumProteinsWithEvidenceNotReported(numProteinWithEvidenceNotReported);
 
-        //Protein evidence
+        //Protein evidence for mapped proteins
+        releaseSummary.setNumMappedProteinsWithExpEvidence(numMappedProteinsWithExpEvidence);
         releaseSummary.setNumMappedProteinsWithExpEvidenceAtTranscript(numMappedProteinsWithExpEvidenceAtTranscript);
         releaseSummary.setNumMappedProteinsWithEvidenceInferredByHomology(numMappedProteinsWithEvidenceInferredByHomology);
         releaseSummary.setNumMappedProteinWithEvidencePredicted(numMappedProteinWithEvidencePredicted);
         releaseSummary.setNumMappedProteinWithEvidenceUncertain(numMappedProteinWithEvidenceUncertain);
+        releaseSummary.setNumMappedProteinsWithEvidenceNotReported(numMappedProteinWithEvidenceNotReported);
 
         releaseSummaryRepository.save(releaseSummary);
 
